@@ -17,17 +17,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "airport")
-public class AirportEntity {
-
+@Table(name = "aircraft")
+public class AircraftEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "airport_name", nullable = false)
-    private String name;
+    @Column(name = "aircraft_reg", nullable = false, unique = true)
+    private String registration;
+
+    @Column(name = "aircraft_model")
+    private String model;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "city_id", referencedColumnName = "id")
-    private CityEntity city;
+    @JoinColumn(name = "airline_id", referencedColumnName = "id")
+    private AirlineEntity airline;
 }

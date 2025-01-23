@@ -1,5 +1,6 @@
 package io.vitech.flights.tracker.entity;
 
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,14 +18,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "airport")
-public class AirportEntity {
-
+@Table(name = "airline")
+public class AirlineEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "airport_name", nullable = false)
+    @Column(name = "airline_name")
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL)

@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.1'
-    id 'org.openapi.generator' version '5.3.1'
+ //   id 'org.openapi.generator' version '5.3.1'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -24,6 +24,7 @@ dependencies {
 //    implementation 'javax.validation:validation-api:2.0.1.Final'
 
     compileOnly 'javax.servlet:servlet-api:2.5'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
 
     implementation 'org.liquibase:liquibase-core'
     implementation 'com.microsoft.sqlserver:mssql-jdbc'

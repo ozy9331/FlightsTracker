@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -12,7 +13,14 @@
         http://www.liquibase.org/xml/ns/pro
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
-    <include file="./releases/database-setup.xml" relativeToChangelogFile="true"/>
-    <include file="./releases/migrate-data-from-old-database.xml" relativeToChangelogFile="true"/>
+    <changeSet id="put-data-to-status" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO flight_status (status)
+            SELECT DISTINCT flight_status
+            FROM historical_flight_raw
+            WHERE flight_status IS NOT NULL
+            AND flight_status NOT IN (SELECT status FROM flight_status);
+        </sql>
+    </changeSet>
 
 </databaseChangeLog>
