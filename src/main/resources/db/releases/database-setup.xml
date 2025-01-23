@@ -1,0 +1,92 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+            http://www.liquibase.org/xml/ns/dbchangelog-ext
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+            http://www.liquibase.org/xml/ns/pro
+            http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet id="database-setup" author="yuzdzhan.ahmed">
+        <createTable tableName="flight">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="flight_date" type="date" />
+            <column name="departure_airport_id" type="bigint" />
+            <column name="arrival_airport_id" type="bigint" />
+            <column name="flight_status_id" type="bigint" />
+            <column name="aircraft_id" type="bigint" />
+        </createTable>
+
+        <createTable tableName="airport">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(250)"/>
+            <column name="city_id" type="bigint" />
+        </createTable>
+
+        <createTable tableName="city">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="city_name" type="varchar(250)" />
+            <column name="timezone" type="varchar(250)" />
+        </createTable>
+
+        <createTable tableName="airline">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="aircraft">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)" />
+        </createTable>
+
+        <createTable tableName="flight_status">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="varchar(100)"/>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="fk_flight2departure"
+                                 baseTableName="flight"
+                                 baseColumnNames="departure_airport_id"
+                                 referencedTableName="airport"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_flight2arrival"
+                                 baseTableName="flight"
+                                 baseColumnNames="arrival_airport_id"
+                                 referencedTableName="airport"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_flight2status"
+                                 baseTableName="flight"
+                                 baseColumnNames="flight_status_id"
+                                 referencedTableName="flight_status"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_flight2aircraft"
+                                 baseTableName="flight"
+                                 baseColumnNames="aircraft_id"
+                                 referencedTableName="aircraft"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_airport2city"
+                                 baseTableName="airport"
+                                 baseColumnNames="city_id"
+                                 referencedTableName="city"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>
