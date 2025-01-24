@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "flight_status")
-public class FlightStatus {
+public class FlightStatusEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

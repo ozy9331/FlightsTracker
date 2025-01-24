@@ -29,6 +29,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="airport_name" type="varchar(250)"/>
+            <column name="iata_code" type="varchar(20)"/>
             <column name="city_id" type="bigint" />
         </createTable>
 
@@ -45,6 +46,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="airline_name" type="varchar(250)" />
+            <column name="icao_code" type="varchar(20)" />
         </createTable>
 
         <createTable tableName="aircraft">
@@ -102,4 +104,26 @@
                                  referencedColumnNames="id"/>
 
     </changeSet>
+
+    <changeSet id="add-unique-constraint-cityname-timezone" author="yuzdzhan.ahmed">
+        <addUniqueConstraint
+                columnNames="city_name, timezone"
+                constraintName="uk_city_name_timezone"
+                tableName="city"/>
+    </changeSet>
+
+    <changeSet id="add-unique-constraint-airplane-name-icao_code" author="yuzdzhan.ahmed">
+        <addUniqueConstraint
+                columnNames="airline_name, icao_code"
+                constraintName="uk_airline_name_ticao_code"
+                tableName="airline"/>
+    </changeSet>
+
+    <changeSet id="add-unique-constraint-airport-name-iata_code" author="yuzdzhan.ahmed">
+        <addUniqueConstraint
+                columnNames="airport_name, iata_code"
+                constraintName="uk_airport_name_iata_code"
+                tableName="airport"/>
+    </changeSet>
+
 </databaseChangeLog>

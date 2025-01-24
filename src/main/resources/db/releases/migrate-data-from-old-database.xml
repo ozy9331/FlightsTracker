@@ -13,6 +13,7 @@
         http://www.liquibase.org/xml/ns/pro
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
+    <!-- This change set inserts distinct flight statuses from historical_flight_raw into flight_status table -->
     <changeSet id="put-data-to-status" author="yuzdzhan.ahmed">
         <sql>
             INSERT INTO flight_status (status)
@@ -22,5 +23,90 @@
             AND flight_status NOT IN (SELECT status FROM flight_status);
         </sql>
     </changeSet>
+
+    <!-- This change set migrates unique city_name and timezone combinations from cities_raw to city table -->
+    <changeSet id="migrate-data-to-city" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO city (city_name, timezone)
+            SELECT city_name, timezone
+            FROM [dbo].[cities_raw]
+            WHERE city_name IS NOT NULL
+            GROUP BY city_name, timezone
+            HAVING COUNT(*) = 1;
+        </sql>
+    </changeSet>
+
+<!--    <changeSet id="migrate-unique-airline-name-icao-code" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            INSERT INTO airline (airline_name, icao_code)-->
+<!--            SELECT DISTINCT airline_name, icao_code-->
+<!--            FROM airline_raw-->
+<!--            WHERE airline_name IS NOT NULL-->
+<!--            AND icao_code IS NOT NULL-->
+<!--            AND (airline_name, icao_code) NOT IN (-->
+<!--            SELECT airline_name, icao_code FROM airline-->
+<!--            );-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+
+    <changeSet id="migrate-data-to-airport" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO airport (airport_name, iata_code, city_id)
+            SELECT DISTINCT ar.airport_name, ar.iata_code, c.id
+            FROM airport_raw ar
+            JOIN city c ON ar.country_name = c.city_name AND ar.timezone = c.timezone
+            LEFT JOIN airport a ON ar.airport_name = a.airport_name AND ar.iata_code = a.iata_code
+            WHERE ar.airport_name IS NOT NULL
+            AND ar.iata_code IS NOT NULL
+            AND a.airport_name IS NULL
+            AND a.iata_code IS NULL;
+        </sql>
+    </changeSet>
+
+<!--    <changeSet id="migrate-data-to-airport" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            INSERT INTO airport (airport_name, iata_code, city_id)-->
+<!--            SELECT DISTINCT ar.airport_name, ar.iata_code, c.id-->
+<!--            FROM airport_raw ar-->
+<!--            JOIN city c ON ar.country_name = c.city_name AND ar.timezone = c.timezone-->
+<!--            WHERE ar.airport_name IS NOT NULL-->
+<!--            AND ar.iata_code IS NOT NULL-->
+<!--            AND (ar.airport_name, ar.iata_code) NOT IN (-->
+<!--            SELECT airport_name, iata_code FROM airport-->
+<!--            );-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+
+
+<!--    <changeSet id="put-data-to-city" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            INSERT INTO city (city_name, timezone)-->
+<!--            SELECT DISTINCT city_name, timezone-->
+<!--            FROM historical_flight_raw-->
+<!--            WHERE city_name IS NOT NULL-->
+<!--            AND city_name NOT IN (SELECT city_name FROM city);-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+
+<!--    <changeSet id="put-data-to-airline" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            INSERT INTO airline (airline_name)-->
+<!--            SELECT DISTINCT airline_name-->
+<!--            FROM historical_flight_raw-->
+<!--            WHERE airline_name IS NOT NULL-->
+<!--            AND airline_name NOT IN (SELECT airline_name FROM airline);-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+
+<!--    <changeSet id="put-data-to-aircraft" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            INSERT INTO aircraft (aircraft_model, aircraft_reg, airline_id)-->
+<!--            SELECT DISTINCT aircraft_model, aircraft_reg, airline_id-->
+<!--            FROM historical_flight_raw-->
+<!--            WHERE aircraft_model IS NOT NULL-->
+<!--            AND aircraft_model NOT IN (SELECT aircraft_model FROM aircraft);-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+
 
 </databaseChangeLog>

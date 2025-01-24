@@ -27,7 +27,12 @@ public class AirlineEntity {
     @Column(name = "airline_name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "city_id", referencedColumnName = "id")
-    private CityEntity city;
+    // The icao_code is a unique four-letter alphanumeric code assigned by the International Civil Aviation Organization (ICAO) to each airport around the world.
+    // It is used for air traffic control and airline operations such as flight planning.
+    @Column(name = "icao_code")
+    private String icaoCode;
+
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "city_id", referencedColumnName = "id")
+//    private CityEntity city;
 }

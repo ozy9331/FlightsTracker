@@ -6,7 +6,7 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:sqlserver://;serverName=localhost;port=1433;databaseName=flights-tracker-db-old;encrypt=true;trustServerCertificate=true;}
+    url: ${SPRING_DATASOURCE_URL:jdbc:sqlserver://;serverName=localhost;port=1433;databaseName=flights-tracker-db-test-1;encrypt=true;trustServerCertificate=true;}
     username: ${SPRING_DATASOURCE_USERNAME:sa}
     password: ${SPRING_DATASOURCE_PASSWORD:DB_Password}
     driverClassName: ${SPRING_DATASOURCE_DRIVERClASSNAME:com.microsoft.sqlserver.jdbc.SQLServerDriver}
@@ -14,3 +14,7 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog-master.xml
+
+logging:
+  level:
+    liquibase: DEBUG

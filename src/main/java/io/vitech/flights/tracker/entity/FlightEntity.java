@@ -20,7 +20,7 @@ public class FlightEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "flight_status_id", referencedColumnName = "id")
-    private FlightStatus flightStatus;
+    private FlightStatusEntity flightStatus;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "arrival_airport_id", referencedColumnName = "id")
