@@ -39,6 +39,7 @@
             </column>
             <column name="city_name" type="varchar(250)" />
             <column name="timezone" type="varchar(250)" />
+            <column name="iata_code" type="varchar(20)"/>
         </createTable>
 
         <createTable tableName="airline">
@@ -47,6 +48,7 @@
             </column>
             <column name="airline_name" type="varchar(250)" />
             <column name="icao_code" type="varchar(20)" />
+            <column name="iata_code" type="varchar(20)"/>
         </createTable>
 
         <createTable tableName="aircraft">
@@ -105,17 +107,17 @@
 
     </changeSet>
 
-    <changeSet id="add-unique-constraint-cityname-timezone" author="yuzdzhan.ahmed">
+    <changeSet id="add-unique-constraint-cityname-timezone-iata_code" author="yuzdzhan.ahmed">
         <addUniqueConstraint
-                columnNames="city_name, timezone"
-                constraintName="uk_city_name_timezone"
+                columnNames="city_name, timezone, iata_code"
+                constraintName="uk_city_name_timezone_iata_code"
                 tableName="city"/>
     </changeSet>
 
-    <changeSet id="add-unique-constraint-airplane-name-icao_code" author="yuzdzhan.ahmed">
+    <changeSet id="add-unique-constraint-airplane-name-icao_code-iata_code" author="yuzdzhan.ahmed">
         <addUniqueConstraint
-                columnNames="airline_name, icao_code"
-                constraintName="uk_airline_name_ticao_code"
+                columnNames="airline_name, icao_code, iata_code"
+                constraintName="uk_airline_name_icao_code"
                 tableName="airline"/>
     </changeSet>
 

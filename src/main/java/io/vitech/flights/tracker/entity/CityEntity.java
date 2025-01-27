@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.TimeZone;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,4 +28,7 @@ public class CityEntity {
 
     @Column(name="timezone")
     private String timezone;
+
+    @Column(name = "iata_code", nullable = false)
+    private String iata_code;
 }
