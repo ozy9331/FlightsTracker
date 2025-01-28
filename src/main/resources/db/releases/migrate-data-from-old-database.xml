@@ -50,6 +50,16 @@
         </sql>
     </changeSet>
 
+    <changeSet id="migrate-data-to-airline" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO airline (airline_name, icao_code, iata_code)
+            SELECT DISTINCT airline_name, icao_code, iata_code
+            FROM airline_raw
+            WHERE airline_name IS NOT NULL
+            AND airline_name NOT IN ('Blocked');
+        </sql>
+    </changeSet>
+
     <!--    <changeSet id="migrate-unique-airline-name-icao-code" author="yuzdzhan.ahmed">-->
     <!--        <sql>-->
     <!--            INSERT INTO airline (airline_name, icao_code)-->

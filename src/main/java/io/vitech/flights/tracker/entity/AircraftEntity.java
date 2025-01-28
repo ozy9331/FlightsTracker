@@ -1,13 +1,10 @@
 package io.vitech.flights.tracker.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -27,7 +24,9 @@ public class AircraftEntity {
     @Column(name = "aircraft_model")
     private String model;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "airline_id", referencedColumnName = "id")
-    private AirlineEntity airline;
+    @Column(name = "aita_assignment")
+    private String aita_assignment;
+
+    @Column(name = "aircraft_age")
+    private String age;
 }

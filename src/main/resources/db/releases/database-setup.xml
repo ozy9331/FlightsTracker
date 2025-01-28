@@ -22,6 +22,7 @@
             <column name="arrival_airport_id" type="bigint" />
             <column name="flight_status_id" type="bigint" />
             <column name="aircraft_id" type="bigint" />
+            <column name="airline_id" type="bigint" />
         </createTable>
 
         <createTable tableName="airport">
@@ -56,8 +57,9 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="aircraft_model" type="varchar(100)" />
-            <column name="aircraft_reg" type="varchar(50)" />
-            <column name="airline_id" type="bigint" />
+            <column name="aircraft_reg" type="varchar(30)" />
+            <column name="aita_assignment" type="varchar(30)" />
+            <column name="aircraft_age" type="int" />
         </createTable>
 
         <createTable tableName="flight_status">
@@ -99,8 +101,8 @@
                                  referencedTableName="city"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint constraintName="fk_aircraft2airline"
-                                 baseTableName="aircraft"
+        <addForeignKeyConstraint constraintName="fk_flight2airline"
+                                 baseTableName="flight"
                                  baseColumnNames="airline_id"
                                  referencedTableName="airline"
                                  referencedColumnNames="id"/>
