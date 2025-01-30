@@ -17,6 +17,12 @@ public class FlightEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String departureIataCode;
+    private String arrivalIataCode;
+    private ZonedDateTime flightDate;
+    private String departureTime;
+    private String arrivalTime;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "flight_status_id", referencedColumnName = "id")
     private FlightStatusEntity flightStatus;
@@ -33,5 +39,7 @@ public class FlightEntity {
     @JoinColumn(name = "aircraft_id", referencedColumnName = "id")
     private AircraftEntity aircraft;
 
-    private ZonedDateTime flightDate;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "airline_id", referencedColumnName = "id")
+    private AirlineEntity airline;
 }

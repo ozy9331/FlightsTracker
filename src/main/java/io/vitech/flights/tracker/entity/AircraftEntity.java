@@ -28,5 +28,5 @@ public class AircraftEntity {
     private String aita_assignment;
 
     @Column(name = "aircraft_age")
-    private String age;
+    private Float age;
 }

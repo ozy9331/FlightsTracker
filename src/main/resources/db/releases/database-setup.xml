@@ -18,6 +18,10 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="flight_date" type="date" />
+            <column name="departure_time" type="varchar(155)" />
+            <column name="arrival_time" type="varchar(155)" />
+            <column name="departure_iata_code" type="varchar(20)" />
+            <column name="arrival_iata_code" type="varchar(20)" />
             <column name="departure_airport_id" type="bigint" />
             <column name="arrival_airport_id" type="bigint" />
             <column name="flight_status_id" type="bigint" />
@@ -59,7 +63,7 @@
             <column name="aircraft_model" type="varchar(100)" />
             <column name="aircraft_reg" type="varchar(30)" />
             <column name="aita_assignment" type="varchar(30)" />
-            <column name="aircraft_age" type="int" />
+            <column name="aircraft_age" type="FLOAT(53)" />
         </createTable>
 
         <createTable tableName="flight_status">
@@ -129,5 +133,4 @@
                 constraintName="uk_airport_name_iata_code"
                 tableName="airport"/>
     </changeSet>
-
 </databaseChangeLog>

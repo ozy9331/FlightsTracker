@@ -60,63 +60,85 @@
         </sql>
     </changeSet>
 
-    <!--    <changeSet id="migrate-unique-airline-name-icao-code" author="yuzdzhan.ahmed">-->
-    <!--        <sql>-->
-    <!--            INSERT INTO airline (airline_name, icao_code)-->
-    <!--            SELECT DISTINCT airline_name, icao_code-->
-    <!--            FROM airline_raw-->
-    <!--            WHERE airline_name IS NOT NULL-->
-    <!--            AND icao_code IS NOT NULL-->
-    <!--            AND (airline_name, icao_code) NOT IN (-->
-    <!--            SELECT airline_name, icao_code FROM airline-->
-    <!--            );-->
-    <!--        </sql>-->
-    <!--    </changeSet>-
+    <changeSet id="migrate-data-to-aircraft" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO aircraft (aircraft_model, aircraft_reg, aita_assignment, aircraft_age)
+            SELECT production_line, registration_number, iata_code_short, plane_age
+            FROM airplane_raw
+            WHERE registration_number IS NOT NULL;
+        </sql>
+    </changeSet>
 
-<!-    <changeSet id="migrate-data-to-airport" author="yuzdzhan.ahmed">-->
-<!--        <sql>-->
-<!--            INSERT INTO airport (airport_name, iata_code, city_id)-->
-<!--            SELECT DISTINCT ar.airport_name, ar.iata_code, c.id-->
-<!--            FROM airport_raw ar-->
-<!--            JOIN city c ON ar.country_name = c.city_name AND ar.timezone = c.timezone-->
-<!--            WHERE ar.airport_name IS NOT NULL-->
-<!--            AND ar.iata_code IS NOT NULL-->
-<!--            AND (ar.airport_name, ar.iata_code) NOT IN (-->
-<!--            SELECT airport_name, iata_code FROM airport-->
-<!--            );-->
-<!--        </sql>-->
-<!--    </changeSet>-->
+    <changeSet id="update-NULL-flight-status-to-unknown" author="yuzdzhan.ahmed">
+        <sql>
+            UPDATE historical_flight_raw
+            SET flight_status = 'UNKNOWN'
+            WHERE flight_status IS NULL;
+        </sql>
+    </changeSet>
 
+    <changeSet id="update-departure-actual" author="yuzdzhan.ahmed">
+        <sql>
+            UPDATE historical_flight_raw
+            SET departure_actual = departure_estimated
+            WHERE departure_actual IS NULL
+            AND departure_estimated IS NOT NULL
+            AND flight_status IN ('DIVERTED', 'LANDED', 'ACTIVE');
+        </sql>
+    </changeSet>
 
-<!--    <changeSet id="put-data-to-city" author="yuzdzhan.ahmed">-->
-<!--        <sql>-->
-<!--            INSERT INTO city (city_name, timezone)-->
-<!--            SELECT DISTINCT city_name, timezone-->
-<!--            FROM historical_flight_raw-->
-<!--            WHERE city_name IS NOT NULL-->
-<!--            AND city_name NOT IN (SELECT city_name FROM city);-->
-<!--        </sql>-->
-<!--    </changeSet>-->
+    <changeSet id="update-arrival-actual" author="yuzdzhan.ahmed">
+        <sql>
+            UPDATE historical_flight_raw
+            SET arrival_actual = arrival_estimated
+            WHERE arrival_actual IS NULL
+            AND arrival_estimated IS NOT NULL
+            AND flight_status IN ('LANDED');
+        </sql>
+    </changeSet>
 
-<!--    <changeSet id="put-data-to-airline" author="yuzdzhan.ahmed">-->
-<!--        <sql>-->
-<!--            INSERT INTO airline (airline_name)-->
-<!--            SELECT DISTINCT airline_name-->
-<!--            FROM historical_flight_raw-->
-<!--            WHERE airline_name IS NOT NULL-->
-<!--            AND airline_name NOT IN (SELECT airline_name FROM airline);-->
-<!--        </sql>-->
-<!--    </changeSet>-->
+    <changeSet id="migrate-cancelled-flights" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO [dbo].[flight]
+            (
+            flight_date,
+            departure_time,
+            arrival_time,
+            departure_iata_code,
+            arrival_iata_code,
+            departure_airport_id,
+            arrival_airport_id,
+            flight_status_id,
+            aircraft_id,
+            airline_id
+            )
+            SELECT
+            hfr.flight_date,
+            hfr.departure_scheduled,
+            hfr.arrival_scheduled,
+            hfr.departure_iata,
+            NULL,   -- arrival_iata_code set to NULL
+            NULL,   -- departure_airport_id set to NULL
+            NULL,   -- arrival_airport_id set to NULL
+            fs.id,  -- Fetch flight_status_id for 'CANCELLED'
+            NULL,   -- aircraft_id set to NULL
+            NULL    -- airline_id set to NULL
+            FROM [dbo].[historical_flight_raw] hfr
+            JOIN [dbo].[flight_status] fs ON fs.status = 'CANCELLED'
+            WHERE hfr.flight_status = 'CANCELLED';
+        </sql>
+    </changeSet>
 
-<!--    <changeSet id="put-data-to-aircraft" author="yuzdzhan.ahmed">-->
-<!--        <sql>-->
-<!--            INSERT INTO aircraft (aircraft_model, aircraft_reg, airline_id)-->
-<!--            SELECT DISTINCT aircraft_model, aircraft_reg, airline_id-->
-<!--            FROM historical_flight_raw-->
-<!--            WHERE aircraft_model IS NOT NULL-->
-<!--            AND aircraft_model NOT IN (SELECT aircraft_model FROM aircraft);-->
-<!--        </sql>-->
-<!--    </changeSet>-->
+    <changeSet id="update-null-aircraft-diverted" author="yuzdzhan.ahmed">
+        <sql>
+            UPDATE historical_flight_raw
+            SET aircraft_registration = 'UNKNOWN',
+            aircraft_iata = 'UNKNOWN'
+            WHERE aircraft_registration IS NULL
+            AND aircraft_iata IS NULL
+            AND flight_status = 'DIVERTED';
+        </sql>
+    </changeSet>
 
 
 </databaseChangeLog>
