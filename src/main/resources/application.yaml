@@ -22,9 +22,13 @@ spring:
     enabled: false
     change-log: classpath:db/changelog-master.xml
 
+openai:
+  api:
+    url : https://api.openai.com/v1/chat/completions
+    key : api-key
 logging:
   level:
-    root: DEBUG
+    #root: DEBUG
     liquibase: ERROR
-    org.apache.coyote: DEBUG
+    #org.apache.coyote: DEBUG
     #org.springframework : DEBUG
