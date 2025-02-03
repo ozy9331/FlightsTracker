@@ -132,7 +132,7 @@
     <changeSet id="update-null-aircraft-diverted" author="yuzdzhan.ahmed">
         <sql>
             UPDATE historical_flight_raw
-            SET aircraft_registration = 'UNKNOWN',
+            SET aircraft_registration = '',
             aircraft_iata = 'UNKNOWN'
             WHERE aircraft_registration IS NULL
             AND aircraft_iata IS NULL

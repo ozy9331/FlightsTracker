@@ -22,6 +22,7 @@ public class FlightEntity {
     private ZonedDateTime flightDate;
     private String departureTime;
     private String arrivalTime;
+    private int range;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "flight_status_id", referencedColumnName = "id")

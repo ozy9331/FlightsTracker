@@ -22,6 +22,7 @@
             <column name="arrival_time" type="varchar(155)" />
             <column name="departure_iata_code" type="varchar(20)" />
             <column name="arrival_iata_code" type="varchar(20)" />
+            <column name="range" type="bigint" />
             <column name="departure_airport_id" type="bigint" />
             <column name="arrival_airport_id" type="bigint" />
             <column name="flight_status_id" type="bigint" />

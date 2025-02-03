@@ -2,10 +2,7 @@ openapi: 3.0.0
 info:
   title: Flight Tracker API
   version: 1.0.0
-  description: API for flights, airports, airlines, airplane and cities statistic .
-
-servers:
-  - url: http://localhost:8080/api
+  description: API for flights, airports, airlines, airplane, and cities statistics.
 
 paths:
   /airports:
@@ -79,14 +76,14 @@ paths:
                 items:
                   $ref: '#/components/schemas/City'
   /cities/{id}:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
     get:
       summary: Get a city by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: A city
@@ -152,6 +149,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Aircraft'
+
+  /sync:
+    post:
+      summary: Trigger a job to sync data
+      description: This endpoint triggers a job to synchronize data in the data platform.
+      responses:
+        '202':
+          description: Sync job accepted and processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResponse'
+        '500':
+          description: Error occurred while triggering the sync job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -226,4 +241,20 @@ components:
         name:
           type: string
         country:
+          type: string
+
+    SyncResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
           type: string
