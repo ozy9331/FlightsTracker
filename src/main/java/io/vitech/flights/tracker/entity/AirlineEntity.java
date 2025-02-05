@@ -28,5 +28,5 @@ public class AirlineEntity {
     private String icaoCode;
 
     @Column(name = "iata_code")
-    private String iata_code;
+    private String iataCode;
 }

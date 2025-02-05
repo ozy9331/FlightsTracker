@@ -28,7 +28,7 @@ public class SyncController
 
             // Returning a 202 Accepted response with success message
             SyncResponse syncResponse = new SyncResponse();
-            syncResponse.setMessage("Sync job successfully started.");
+            syncResponse.setMessage("Sync job successfully triggered.");
             syncResponse.setStatus("accepted");
 
             return new ResponseEntity<>(syncResponse, HttpStatus.ACCEPTED);

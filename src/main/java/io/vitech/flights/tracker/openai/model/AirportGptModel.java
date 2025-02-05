@@ -6,12 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class AirportGptModel implements GptRequestModel {
     @JsonProperty
     private String name;

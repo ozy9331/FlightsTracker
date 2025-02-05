@@ -130,10 +130,10 @@
                 tableName="airline"/>
     </changeSet>
 
-    <changeSet id="add-unique-constraint-airport-name-iata_code" author="yuzdzhan.ahmed">
-        <addUniqueConstraint
-                columnNames="airport_name, iata_code"
-                constraintName="uk_airport_name_iata_code"
-                tableName="airport"/>
-    </changeSet>
+<!--    <changeSet id="add-unique-constraint-airport-name-iata_code-city_id" author="yuzdzhan.ahmed">-->
+<!--        <addUniqueConstraint-->
+<!--                columnNames="airport_name, iata_code, city_id"-->
+<!--                constraintName="uk_airport_name_iata_code"-->
+<!--                tableName="airport"/>-->
+<!--    </changeSet>-->
 </databaseChangeLog>

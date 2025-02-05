@@ -81,8 +81,8 @@
         <sql>
             UPDATE historical_flight_raw
             SET departure_actual = departure_scheduled
-            WHERE departure_actual IS NULL;
-            AND departure_scheduled IS NOT NULL
+            WHERE departure_actual IS NULL
+            AND departure_scheduled IS NOT NULL;
         </sql>
     </changeSet>
 
@@ -90,8 +90,8 @@
         <sql>
             UPDATE historical_flight_raw
             SET arrival_actual = arrival_scheduled
-            WHERE departure_actual IS NULL;
-            AND arrival_scheduled IS NOT NULL
+            WHERE arrival_actual IS NULL
+            AND arrival_scheduled IS NOT NULL;
         </sql>
     </changeSet>
 
@@ -151,7 +151,30 @@
             WHERE flight.arrival_airport_id IS NULL;
         </sql>
     </changeSet>
+    <changeSet id="update-airline-id" author="yuzdzhan.ahmed">
+        <sql>
+            UPDATE flight
+            SET airline_id = airline.id
+            FROM flight
+            JOIN airline ON flight.airline_iata = airline.iata_code OR flight.airline_icao = airline.icao_code
+            WHERE flight.airline_id IS NULL;
+        </sql>
+    </changeSet>
+    <changeSet id="update-airline-id" author="yuzdzhan.ahmed">
+        <sql>
+            UPDATE flight
+            SET airline_id = airline.id
+            FROM flight
+            JOIN airline ON flight.airline_iata = airline.iata_code OR flight.airline_icao = airline.icao_code
+            WHERE flight.airline_id IS NULL;
+        </sql>
+    </changeSet>
 
+    <changeSet id="hard-release-lock" author="yuzdzhan.ahmed">
+        <sql>
+            DELETE FROM DATABASECHANGELOGLOCK WHERE ID=1;
+        </sql>
+    </changeSet>
 
 <!--    <changeSet id="update-departure-actual" author="yuzdzhan.ahmed">-->
 <!--        <sql>-->

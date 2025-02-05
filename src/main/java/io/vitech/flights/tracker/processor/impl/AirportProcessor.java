@@ -9,9 +9,11 @@ import io.vitech.flights.tracker.openai.model.AirportGptModel;
 import io.vitech.flights.tracker.processor.BaseProcessor;
 import io.vitech.flights.tracker.repository.AirportRepository;
 import io.vitech.flights.tracker.repository.FlightRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -20,10 +22,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnProperty(name = "openai.processor.airport.enabled", havingValue = "true")
 public class AirportProcessor extends BaseProcessor {
+
     private static Logger LOGGER = LoggerFactory.getLogger(AirportProcessor.class);
 
-    @Value("${airport.chunk.size}")
+    @Value("${openai.processor.airport.chunk-size}")
     private int chunkSize;
 
     FlightRepository flightRepository;
@@ -41,6 +45,8 @@ public class AirportProcessor extends BaseProcessor {
 
     @Override
     public void process() {
+        LOGGER.debug(PROCESSING_START_LOG_MSG_TEMPLATE, this.getClass().getSimpleName());
+
         final Set<AirportGptModel> airportGptModels = new HashSet<>();
 
         airportGptModels.addAll(flightRepository.findAllByNullDepartureAirportIdAndStatus("LANDED").stream()
@@ -63,15 +69,16 @@ public class AirportProcessor extends BaseProcessor {
                 LOGGER.debug("Processing chunk: " + chunk);
                 // Process each chunk
                 String structuredResponse = openAIService.getStructuredResponse(chunk);
-                LOGGER.info("structuredResponse = " + structuredResponse);
+                LOGGER.debug("structuredResponse = " + structuredResponse);
 
                 List<AirportGptModel> airports = responseParser.parseResponse(structuredResponse, AirportGptModel.class);
                 airports.forEach(airportGptModel -> {
-                    if (airportRepository.findByIataCode(airportGptModel.getIata()).isEmpty()) {
-                        LOGGER.info("Airport DOEST EXIST: " + airportGptModel);
+                    if (StringUtils.isNotBlank(airportGptModel.getName()) && airportRepository.findByIataCodeAndName(airportGptModel.getIata(), airportGptModel.getName()).isEmpty()) {
+
+                        LOGGER.debug("Airport [{}] DOES NOT EXIST in DB. " , airportGptModel);
                         airportRepository.save(airportMapper.toEntity(airportGptModel));
                     }else {
-                        LOGGER.info("Airport EXISTS: " + airportGptModel);
+                        LOGGER.debug("Airport [{}] skipped and will not be saved to DB.", airportGptModel);
                     }
                 });
             }
@@ -80,7 +87,6 @@ public class AirportProcessor extends BaseProcessor {
             LOGGER.error("Error processing airports", e);
             throw new RuntimeException(e);
         }
-
-        LOGGER.debug("Processing airports end");
+        LOGGER.debug(PROCESSING_END_MSG_TEMPLATE, this.getClass().getSimpleName());
     }
 }

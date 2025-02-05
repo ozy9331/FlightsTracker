@@ -1,7 +1,5 @@
 package io.vitech.flights.tracker.service;
 
-import io.vitech.flights.tracker.entity.AirportEntity;
-import io.vitech.flights.tracker.entity.CityEntity;
 import io.vitech.flights.tracker.mapper.AirportMapper;
 import io.vitech.flights.tracker.openai.OpenAIService;
 import io.vitech.flights.tracker.processor.BaseProcessor;
@@ -31,23 +29,24 @@ public class SyncService {
     @Async
     public void syncData() {
         try {
-            LOGGER.info("Sync job started...");
-
+            LOGGER.info("Sync job started.");
             for (BaseProcessor processor : recordProcessors) {
                 processor.process();
             }
             LOGGER.info("Sync job completed.");
 
         } catch (Exception e) {
-            LOGGER.error("Synch job failed.", e);
+            LOGGER.error("Sync job failed.", e);
         }
     }
 
     // The @PostConstruct method runs after the bean has been initialized
     @PostConstruct
     public void init() {
-        LOGGER.info("Initializing SyncService...");
-        // Start syncData when the bean is initialized
-        syncData();
+
+        Thread daemonThread = new Thread(this::syncData);
+        daemonThread.setDaemon(true);
+        daemonThread.start();
+        LOGGER.info("Sync job triggered as daemon thread [{}].", daemonThread.getName());
     }
 }
