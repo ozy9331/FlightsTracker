@@ -3,11 +3,15 @@ package io.vitech.flights.tracker.helper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.vitech.flights.tracker.openai.model.AirportGptModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ResponseParser {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseParser.class);
 
     private final ObjectMapper objectMapper;
 
@@ -15,35 +19,38 @@ public class ResponseParser {
         this.objectMapper = objectMapper;
     }
 
-    public AirportGptModel parseResponse(String jsonResponse) {
-        JsonNode rootNode = null;
+    public <T> List <T> parseResponse(final String jsonString, Class<T> clazz) {
         try {
-            rootNode = objectMapper.readTree(jsonResponse);
+            return objectMapper.readValue(jsonString, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        JsonNode choicesNode = rootNode.path("choices");
-        if (choicesNode.isArray() && choicesNode.size() > 0) {
-            JsonNode contentNode = choicesNode.get(0).path("message").path("content");
-            if (!contentNode.isMissingNode()) {
-                String content = contentNode.asText();
-                JsonNode contentJsonNode = null;
-                try {
-                    contentJsonNode = objectMapper.readTree(content);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-                boolean status = contentJsonNode.path("status").asBoolean();
-                if (status) {
-                    JsonNode dataNode = contentJsonNode.path("data");
-                    try {
-                        return objectMapper.treeToValue(dataNode, AirportGptModel.class);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-        return null;
     }
+
+    public String parseJsonResponse(String jsonString) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(jsonString);
+
+            // Extract the 'content' field
+            String content = rootNode.path("choices").get(0).path("message").path("content").asText();
+
+            // Remove the ```json wrapper
+            content = content.replace("```json", "").replace("```", "").trim();
+
+            // Parse content as JSON
+            JsonNode contentNode = objectMapper.readTree(content);
+            // Check if status is true
+            if (contentNode.path("status").asBoolean()) {
+                JsonNode dataNode = contentNode.path("data");
+                LOGGER.debug("Extracted Data: " + dataNode.toPrettyString());
+                return dataNode.toPrettyString();
+            } else {
+                LOGGER.warn("Status is false. No data extracted." + jsonString);
+                throw new IllegalArgumentException("No data extracted.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

@@ -30,7 +30,7 @@ public class CityEntity implements GptRequestModel {
     private long id;
 
     @JsonProperty
-    @Column(name="city_name", nullable = false)
+    @Column(name="city_name")
     private String name;
 
     @JsonProperty
@@ -38,6 +38,6 @@ public class CityEntity implements GptRequestModel {
     private String timezone;
 
     @JsonProperty
-    @Column(name = "iata_code", nullable = false)
-    private String iata_code;
+    @Column(name = "iata_code")
+    private String iataCode;
 }

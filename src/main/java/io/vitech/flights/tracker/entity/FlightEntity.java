@@ -3,6 +3,7 @@ package io.vitech.flights.tracker.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
@@ -10,19 +11,22 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Getter
 @Table(name = "flight")
 public class FlightEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    private String departureIataCode;
-    private String arrivalIataCode;
     private ZonedDateTime flightDate;
     private String departureTime;
     private String arrivalTime;
-    private int range;
+    private Integer range;
+
+    private String departureIataCode;
+    private String arrivalIataCode;
+    private String airlineIata;
+    private String airlineIcao;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "flight_status_id", referencedColumnName = "id")

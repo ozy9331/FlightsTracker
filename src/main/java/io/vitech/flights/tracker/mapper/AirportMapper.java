@@ -13,15 +13,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-@Mapper(config = BaseMapper.class)
+@Mapper(componentModel = "spring", config = BaseMapper.class)
 public interface AirportMapper extends BaseMapper<AirportEntity, AirportGptModel> {
      Logger LOGGER = Logger.getLogger(AirportMapper.class.getName());
 
     @Override
-    @Mapping(source = "iata_code", target = "iata")
+    @Mapping(source = "iataCode", target = "iata")
     @Mapping(source = "city.name", target = "cityName")
     @Mapping(source = "city.timezone", target = "timezone")
     AirportGptModel toDto(AirportEntity airportEntity);
+
+    @AfterMapping
+    default void afterToDto(@MappingTarget AirportGptModel airportGptModel) {
+        if ("N/A".equals(airportGptModel.getIata())) {
+            airportGptModel.setIata(null);
+        }
+    }
 
     @Override
     AirportEntity toEntity(AirportGptModel airportGptModel);
@@ -43,4 +50,5 @@ public interface AirportMapper extends BaseMapper<AirportEntity, AirportGptModel
             airportEntity.setCity(cityEntity);
         }
     }
+
 }

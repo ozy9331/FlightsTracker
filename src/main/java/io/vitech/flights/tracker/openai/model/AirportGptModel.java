@@ -1,12 +1,18 @@
 package io.vitech.flights.tracker.openai.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class AirportGptModel {
+@RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
+public class AirportGptModel implements GptRequestModel {
     @JsonProperty
     private String name;
     @JsonProperty

@@ -29,14 +29,14 @@ public class AirportEntity implements GptRequestModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "airport_name", nullable = false)
+    @Column(name = "airport_name")
     private String name;
 
     //The iata_code of an airport is a unique three-letter code assigned by the International Air Transport Association (IATA) to identify airports around the world.
     // This code is commonly used in airline timetables, tickets, and baggage tags.
 
-    @Column(name = "iata_code", nullable = false)
-    private String iata_code;
+    @Column(name = "iata_code")
+    private String iataCode;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "city_id", referencedColumnName = "id")
