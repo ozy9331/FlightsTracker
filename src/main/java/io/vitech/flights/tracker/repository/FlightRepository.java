@@ -15,4 +15,5 @@ public interface FlightRepository extends JpaRepository<FlightEntity, Long> {
 
     @Query("SELECT f FROM FlightEntity f WHERE f.arrivalAirport.id IS NULL AND f.flightStatus.status = ?1")
     List<FlightEntity> findAllByNullArrivalAirportIdAndStatus(String status);
+
 }

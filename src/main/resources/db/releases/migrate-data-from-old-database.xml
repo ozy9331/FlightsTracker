@@ -151,50 +151,41 @@
             WHERE flight.arrival_airport_id IS NULL;
         </sql>
     </changeSet>
-    <changeSet id="update-airline-id" author="yuzdzhan.ahmed">
-        <sql>
-            UPDATE flight
-            SET airline_id = airline.id
-            FROM flight
-            JOIN airline ON flight.airline_iata = airline.iata_code OR flight.airline_icao = airline.icao_code
-            WHERE flight.airline_id IS NULL;
-        </sql>
-    </changeSet>
-    <changeSet id="update-airline-id" author="yuzdzhan.ahmed">
-        <sql>
-            UPDATE flight
-            SET airline_id = airline.id
-            FROM flight
-            JOIN airline ON flight.airline_iata = airline.iata_code OR flight.airline_icao = airline.icao_code
-            WHERE flight.airline_id IS NULL;
-        </sql>
-    </changeSet>
+
+<!--    <changeSet id="update-airline-id-iata" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            WITH airline_cte AS (-->
+<!--            SELECT id, iata_code-->
+<!--            FROM airline-->
+<!--            )-->
+<!--            UPDATE flight-->
+<!--            SET airline_id = airline_cte.id-->
+<!--            FROM airline_cte-->
+<!--            WHERE flight.airline_iata = airline_cte.iata_code-->
+<!--            AND flight.airline_id IS NULL-->
+<!--            AND flight.airline_iata IS NOT NULL;-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+
+<!--    <changeSet id="update-airline-id-icao" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            WITH airline_cte AS (-->
+<!--            SELECT id, icao_code-->
+<!--            FROM airline-->
+<!--            )-->
+<!--            UPDATE flight-->
+<!--            SET airline_id = airline_cte.id-->
+<!--            FROM airline_cte-->
+<!--            WHERE flight.airline_icao = airline_cte.icao_code-->
+<!--            AND flight.airline_id IS NULL-->
+<!--            AND flight.airline_icao IS NOT NULL;-->
+<!--        </sql>-->
+<!--    </changeSet>-->
 
     <changeSet id="hard-release-lock" author="yuzdzhan.ahmed">
         <sql>
             DELETE FROM DATABASECHANGELOGLOCK WHERE ID=1;
         </sql>
     </changeSet>
-
-<!--    <changeSet id="update-departure-actual" author="yuzdzhan.ahmed">-->
-<!--        <sql>-->
-<!--            UPDATE historical_flight_raw-->
-<!--            SET departure_actual = departure_estimated-->
-<!--            WHERE departure_actual IS NULL-->
-<!--            AND departure_estimated IS NOT NULL-->
-<!--            AND flight_status IN ('DIVERTED', 'LANDED', 'ACTIVE');-->
-<!--        </sql>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="update-arrival-actual" author="yuzdzhan.ahmed">-->
-<!--        <sql>-->
-<!--            UPDATE historical_flight_raw-->
-<!--            SET arrival_actual = arrival_estimated-->
-<!--            WHERE arrival_actual IS NULL-->
-<!--            AND arrival_estimated IS NOT NULL-->
-<!--            AND flight_status IN ('LANDED');-->
-<!--        </sql>-->
-<!--    </changeSet>-->
-
 
 </databaseChangeLog>

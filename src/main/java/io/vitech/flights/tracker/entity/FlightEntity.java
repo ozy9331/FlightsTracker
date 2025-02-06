@@ -1,5 +1,6 @@
 package io.vitech.flights.tracker.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,12 +24,16 @@ public class FlightEntity {
     private String arrivalTime;
     private Integer range;
 
+    @JsonIgnore
     private String departureIataCode;
+    @JsonIgnore
     private String arrivalIataCode;
+    @JsonIgnore
     private String airlineIata;
+    @JsonIgnore
     private String airlineIcao;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "flight_status_id", referencedColumnName = "id")
     private FlightStatusEntity flightStatus;
 

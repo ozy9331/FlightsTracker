@@ -136,4 +136,27 @@
 <!--                constraintName="uk_airport_name_iata_code"-->
 <!--                tableName="airport"/>-->
 <!--    </changeSet>-->
+
+    <changeSet id="create-index-aircraft-reg" author="yuzdzhan.ahmed">
+        <createIndex indexName="idx_aircraft_reg" tableName="aircraft">
+            <column name="aircraft_reg"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="create-index-airline-iata" author="yuzdzhan.ahmed">
+        <createIndex indexName="idx_airline_iata" tableName="airline">
+            <column name="iata_code"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="create-index-airline-icao" author="yuzdzhan.ahmed">
+        <createIndex indexName="idx_airline_icao" tableName="airline">
+            <column name="icao_code"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="create-index-airport-iata" author="yuzdzhan.ahmed">
+        <createIndex indexName="idx_airport_iata" tableName="airport">
+            <column name="iata_code"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

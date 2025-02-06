@@ -1,28 +1,21 @@
 package io.vitech.flights.tracker.service;
 
-import io.vitech.flights.tracker.mapper.AirportMapper;
-import io.vitech.flights.tracker.openai.OpenAIService;
 import io.vitech.flights.tracker.processor.BaseProcessor;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
 public class SyncService {
     private static final Logger LOGGER  = LoggerFactory.getLogger(SyncService.class);
 
-    OpenAIService openAIService;
-    AirportMapper airportMapper;
-
     private final List<BaseProcessor> recordProcessors;
 
-    public SyncService(final AirportMapper airportMapper, final OpenAIService openAIService, List<BaseProcessor> recordProcessors) {
-        this.openAIService = openAIService;
-        this.airportMapper = airportMapper;
+    public SyncService(List<BaseProcessor> recordProcessors) {
         this.recordProcessors = recordProcessors;
     }
 

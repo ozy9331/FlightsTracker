@@ -1,7 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.1'
-    //id 'org.openapi.generator' version '5.3.1'
+    id 'org.springframework.boot' version '3.2.0'
+   // id 'org.openapi.generator' version "6.6.0"
+    //id 'io.swagger.codegen.v3' version '3.0.47'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -15,10 +16,13 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
 
-    //implementation 'org.springdoc:springdoc-openapi-ui:1.4.6'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+//    implementation 'org.springdoc:springdoc-openapi-ui:1.4.6'
 //    implementation 'io.swagger:swagger-annotations:1.6.15'
-      implementation 'javax.annotation:javax.annotation-api:1.3.2'
 //    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
 //    implementation 'org.springframework:spring-webmvc:5.2.1.RELEASE'
 //    implementation 'javax.validation:validation-api:2.0.1.Final'
@@ -44,23 +48,31 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
-//configurations
-//        openApiGenerate {
-//            generatorName = "spring"
-//            inputSpec = "$projectDir/src/main/resources/openapi.yml"
-//            outputDir = "$buildDir/generated"
-//            apiPackage = "io.vitech.flights.tracker.api"
-//            modelPackage = "io.vitech.flights.tracker.model"
-//            //invokerPackage = "io.vitech.flights.tracker.invoker"
-//            configOptions = [
-//                    dateLibrary: "java17",
-//                    generateApis: "true",     // This makes sure APIs are generated
-//                    generateControllers: "false", // Disable controller generation
-//                    generateSupportingFiles: "false" // This disables supporting files generation
-//            ]
-//
+//openApiGenerate {
+//    generatorName = "java"
+//    inputSpec = "$rootDir/src/main/resources/openapi.yml" // Path to OpenAPI spec
+//    outputDir = "$buildDir/generated"
+//    apiPackage = "io.vitech.flights.tracker.api"
+//    modelPackage = "io.vitech.flights.tracker.model"
+//    configOptions = [
+//            dateLibrary: "java8",  // Java 8 Date/Time types
+//            library: "native"      // Native Java client
+//    ]
+//    validateSpec = false
+//}
+
+//swaggerSources {
+//    myApi {
+//        inputFile = file("$rootDir/src/main/resources/openapi.yml")
+//        code {
+//            language = 'java'
+//            configFile = file("$rootDir/swagger-config.json") // Optional
+//            outputDir = file("$buildDir/generated")
 //        }
-//
+//    }
+//}
+
+
 //sourceSets {
 //    main {
 //        java {
@@ -68,6 +80,18 @@ dependencies {
 //        }
 //    }
 //}
+//This configuration ensures that the openApiGenerate task runs before the compileJava task,
+// generating the necessary code from the OpenAPI specification.
+//tasks.named('compileJava') {
+//    dependsOn tasks.named('openApiGenerate')
+//}
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.2.0"
+    }
+}
+
+
 
 test {
     useJUnitPlatform()
