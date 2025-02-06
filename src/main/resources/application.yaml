@@ -4,6 +4,9 @@ spring:
   jpa:
     show-sql: true
     hibernate:
+      format_sql: true
+      use_sql_comments: true
+      generate_statistics: true
       ddl-auto: none
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:sqlserver://;serverName=localhost;port=1433;databaseName=flights-tracker-db-04;encrypt=true;trustServerCertificate=true;}
@@ -48,7 +51,13 @@ logging:
     #com.zaxxer.hikari: DEBUG
     #org.apache.coyote: DEBUG
     #org.springframework : DEBUG
-    org.hibernate.SQL: OFF
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
     org.hibernate.type.descriptor.sql.BasicBinder: OFF
     org.hibernate.type: OFF
     org.hibernate: OFF

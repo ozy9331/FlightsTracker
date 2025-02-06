@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -111,6 +113,49 @@ public class FlightTrackerController {
     public ResponseEntity<AircraftEntity> getAircraftById(@PathVariable int id) {
         return ResponseEntity.ok(aircraftService.getAircraftById(id));
     }
+
+    @Operation(summary = "Get top arrival airports")
+    @GetMapping("/top-arrival-airports")
+    public ResponseEntity<List<AirportEntity>> getTopArrivalAirports(@RequestParam(required = false) int limit) {
+        return ResponseEntity.ok(flightService.getTopArrivalAirports(getPageSize(limit)));
+    }
+
+    @Operation(summary = "Get top departure airports")
+    @GetMapping("/top-departure-airports")
+    public ResponseEntity<List<AirportEntity>> getTopDepartureAirports(@RequestParam(required = false) int limit) {
+        return ResponseEntity.ok(flightService.getTopDepartureAirports(getPageSize(limit)));
+    }
+
+    @Operation(summary = "Get top entities based on type")
+    @GetMapping("/top")
+    public ResponseEntity<?> getTopEntities(
+            @RequestParam String type,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) Integer rangeStart,
+            @RequestParam(required = false) Integer rangeEnd) {
+        int pageSize = getPageSize(limit);
+        switch (type) {
+            case "arrival-airport":
+                return ResponseEntity.ok(flightService.getTopArrivalAirports(pageSize, startDate, endDate, rangeStart, rangeEnd));
+            case "departure-airport":
+                return ResponseEntity.ok(flightService.getTopDepartureAirports(pageSize, startDate, endDate, rangeStart, rangeEnd));
+            case "airline":
+                // Implement logic to get top airlines
+                break;
+            case "aircraft":
+                // Implement logic to get top aircrafts
+                break;
+            case "businessDay":
+                // Implement logic to get top business days
+                break;
+            default:
+                return ResponseEntity.badRequest().body("Invalid type parameter");
+        }
+        return ResponseEntity.badRequest().body("Type not implemented yet");
+    }
+
 
     private int getPageSize(Integer size) {
         return Objects.nonNull(size) && size > 0 ? Math.min(size, paginationConfig.getMaxPageSize()) : paginationConfig.getDefaultPageSize();

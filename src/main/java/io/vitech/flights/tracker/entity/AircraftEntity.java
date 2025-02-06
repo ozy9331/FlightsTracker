@@ -7,11 +7,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Getter
 @Table(name = "aircraft")
 public class AircraftEntity {
     @Id
@@ -25,7 +27,7 @@ public class AircraftEntity {
     private String model;
 
     @Column(name = "aita_assignment")
-    private String aita_assignment;
+    private String aitaAssignment;
 
     @Column(name = "aircraft_age")
     private Float age;

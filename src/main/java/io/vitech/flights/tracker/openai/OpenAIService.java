@@ -23,10 +23,10 @@ import java.util.Set;
 public class OpenAIService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenAIService.class);
 
-    @Value("${openai.api.key}")
+    @Value("${vitech.tracker.openai.api.key}")
     private String apiKey;
 
-    @Value("${openai.api.url}")
+    @Value("${vitech.tracker.openai.api.url}")
     private String apiUrl;
 
     private final RestTemplate restTemplate;
