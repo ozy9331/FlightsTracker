@@ -21,6 +21,6 @@ public class FlightService {
     }
 
     public FlightEntity getFlightById(int id) {
-        return flightRepository.findById((long) id).orElse(null);
+        return flightRepository.findById((long) id).orElseThrow();
     }
 }

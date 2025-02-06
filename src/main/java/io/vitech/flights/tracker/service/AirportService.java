@@ -1,17 +1,27 @@
 package io.vitech.flights.tracker.service;
 
 import io.vitech.flights.tracker.entity.AirportEntity;
+import io.vitech.flights.tracker.repository.AirportRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class AirportService {
-    public List<AirportEntity> getAllAirports() {
-        return List.of();
+
+    private final AirportRepository airportRepository;
+
+    public AirportService(AirportRepository airportRepository) {
+        this.airportRepository = airportRepository;
+    }
+
+    public Page<AirportEntity> getAllAirports(PageRequest pageRequest) {
+        return airportRepository.findAll(pageRequest);
     }
 
     public AirportEntity getAirportById(int id) {
-        return new AirportEntity();
+        return airportRepository.findById((long) id).orElseThrow();
     }
 }

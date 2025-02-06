@@ -27,7 +27,7 @@ public class AirportProcessor extends BaseProcessor {
 
     private static Logger LOGGER = LoggerFactory.getLogger(AirportProcessor.class);
 
-    @Value("${openai.processor.airport.chunk-size}")
+    @Value("${vitech.tracker.processor.airport.chunk-size}")
     private int chunkSize;
 
     FlightRepository flightRepository;

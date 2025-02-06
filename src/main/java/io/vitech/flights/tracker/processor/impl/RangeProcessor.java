@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@ConditionalOnProperty(name = "openai.processor.range.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "vitech.tracker.processor.range.enabled", havingValue = "true")
 public class RangeProcessor extends BaseProcessor {
     public static final Logger LOGGER = LoggerFactory.getLogger(RangeProcessor.class);
     public RangeProcessor(OpenAIService openAIService) {

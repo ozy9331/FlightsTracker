@@ -23,18 +23,22 @@ spring:
     parameters:
       lock-wait-time: 300000  # 5 minutes
       change-log-lock-poll-rate: 10000  # 10 secondsmigrar
+vitech:
+  tracker:
+    openai:
+      api:
+        url : https://api.openai.com/v1/chat/completions
 
-openai:
-  api:
-    url : https://api.openai.com/v1/chat/completions
-
-  processor:
-    airport:
-      enabled: false
-      chunk-size: 1000
-    range:
-      enabled: true
-      chunk-size: 1000
+    processor:
+      airport:
+        enabled: false
+        chunk-size: 1000
+      range:
+        enabled: true
+        chunk-size: 1000
+    pagination:
+      default-page-size: 10
+      max-page-size: 100
 
 logging:
   level:
