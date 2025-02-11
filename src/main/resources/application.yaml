@@ -9,7 +9,7 @@ spring:
       generate_statistics: true
       ddl-auto: none
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:sqlserver://;serverName=localhost;port=1433;databaseName=flights-tracker-db-04;encrypt=true;trustServerCertificate=true;}
+    url: ${SPRING_DATASOURCE_URL:jdbc:sqlserver://;serverName=localhost;port=1433;databaseName=flights-tracker-db-01;encrypt=true;trustServerCertificate=true;}
     username: ${SPRING_DATASOURCE_USERNAME:sa}
     password: ${SPRING_DATASOURCE_PASSWORD:DB_Password}
     driverClassName: ${SPRING_DATASOURCE_DRIVERClASSNAME:com.microsoft.sqlserver.jdbc.SQLServerDriver}
@@ -26,17 +26,20 @@ spring:
     parameters:
       lock-wait-time: 300000  # 5 minutes
       change-log-lock-poll-rate: 10000  # 10 secondsmigrar
+
 vitech:
   tracker:
     openai:
       api:
         url : https://api.openai.com/v1/chat/completions
-
     processor:
       airport:
         enabled: false
         chunk-size: 1000
       range:
+        enabled: true
+        chunk-size: 1000
+      aircraft-type:
         enabled: true
         chunk-size: 1000
     pagination:

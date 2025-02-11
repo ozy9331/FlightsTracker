@@ -66,10 +66,10 @@ public class AirportProcessor extends BaseProcessor {
 
         try {
             for (Set<AirportGptModel> chunk : chunks) {
-                LOGGER.debug("Processing chunk: " + chunk);
+                LOGGER.debug("Processing chunk: {}", chunk);
                 // Process each chunk
-                String structuredResponse = openAIService.getStructuredResponse(chunk);
-                LOGGER.debug("structuredResponse = " + structuredResponse);
+                String structuredResponse = ""; openAIService.getStructuredResponse(chunk);
+                LOGGER.debug("StructuredResponse = {}", structuredResponse);
 
                 List<AirportGptModel> airports = responseParser.parseResponse(structuredResponse, AirportGptModel.class);
                 airports.forEach(airportGptModel -> {

@@ -31,4 +31,10 @@ public class AirlineEntity {
 
     @Column(name = "iata_code")
     private String iataCode;
+
+    @Column(name = "date_founded")
+    private String dateFounded;
+
+    @Column(name = "fleet_size")
+    private int fleetSize;
 }

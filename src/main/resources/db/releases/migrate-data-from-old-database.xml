@@ -24,15 +24,36 @@
         </sql>
     </changeSet>
 
+    <!-- This change set inserts distinct timezones from cities_raw into timezone -->
+    <changeSet id="put-data-to-timezone" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO timezones (timezone)
+            SELECT DISTINCT timezone
+            FROM cities_raw
+            WHERE timezone IS NOT NULL
+            AND timezone NOT IN (SELECT timezone FROM timezones);
+        </sql>
+    </changeSet>
+
     <!-- This change set migrates unique city_name and timezone combinations from cities_raw to city table -->
     <changeSet id="migrate-data-to-city" author="yuzdzhan.ahmed">
         <sql>
-            INSERT INTO city (city_name, timezone, iata_code)
-            SELECT city_name, timezone, iata_code
-            FROM [dbo].[cities_raw]
-            WHERE city_name IS NOT NULL
-            GROUP BY city_name, timezone, iata_code
+            INSERT INTO cities (city_name, timezone_id, iata_code)
+            SELECT cr.city_name, tz.id, cr.iata_code
+            FROM cities_raw cr
+            JOIN timezones tz ON cr.timezone = tz.timezone
+            WHERE cr.city_name IS NOT NULL
+            GROUP BY cr.city_name, tz.id, cr.iata_code
             HAVING COUNT(*) = 1;
+        </sql>
+    </changeSet>
+
+    <changeSet id="migrate-data-to-aircraft-type" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO aircraft_type (iata_code, type)
+            SELECT iata_code, aircraft_name
+            FROM aircraft_type_raw
+            WHERE iata_code NOT IN (SELECT iata_code FROM aircraft_type) AND iata_code IS NOT NULL AND aircraft_name IS NOT NULL;
         </sql>
     </changeSet>
 
@@ -41,7 +62,7 @@
             INSERT INTO airport (airport_name, iata_code, city_id)
             SELECT DISTINCT ar.airport_name, ar.iata_code, c.id
             FROM airport_raw ar
-            JOIN city c ON ar.city_iata_code = c.iata_code
+            JOIN cities c ON ar.city_iata_code = c.iata_code
             LEFT JOIN airport a ON ar.airport_name = a.airport_name AND ar.iata_code = a.iata_code
             WHERE ar.airport_name IS NOT NULL
             AND ar.iata_code IS NOT NULL
@@ -60,12 +81,26 @@
         </sql>
     </changeSet>
 
+<!--    <changeSet id="migrate-data-to-aircraft" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            INSERT INTO aircraft (aircraft_model, aircraft_reg, aita_assignment, aircraft_age)-->
+<!--            SELECT production_line, registration_number, iata_code_short, plane_age-->
+<!--            FROM airplane_raw-->
+<!--            WHERE registration_number IS NOT NULL;-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+
     <changeSet id="migrate-data-to-aircraft" author="yuzdzhan.ahmed">
         <sql>
-            INSERT INTO aircraft (aircraft_model, aircraft_reg, aita_assignment, aircraft_age)
-            SELECT production_line, registration_number, iata_code_short, plane_age
-            FROM airplane_raw
-            WHERE registration_number IS NOT NULL;
+            INSERT INTO aircraft (aircraft_reg, iata_code, aircraft_age, first_flight_date, delivery_date, registration_date, construction_number, plane_owner, airline_iata_code, aircraft_type_id)
+            SELECT ar.registration_number, ar.iata_code_short, ar.plane_age,
+            ar.first_flight_date,
+            ar.delivery_date,
+            ar.registration_date,
+            ar.construction_number, ar.plane_owner, ar.airline_iata_code, at.id
+            FROM airplane_raw ar
+            LEFT JOIN aircraft_type at ON ar.iata_code_short = at.iata_code
+            WHERE ar.registration_number IS NOT NULL;
         </sql>
     </changeSet>
 
@@ -182,10 +217,10 @@
 <!--        </sql>-->
 <!--    </changeSet>-->
 
-    <changeSet id="hard-release-lock" author="yuzdzhan.ahmed">
-        <sql>
-            DELETE FROM DATABASECHANGELOGLOCK WHERE ID=1;
-        </sql>
-    </changeSet>
+<!--    <changeSet id="hard-release-lock" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            DELETE FROM DATABASECHANGELOGLOCK WHERE ID=1;-->
+<!--        </sql>-->
+<!--    </changeSet>-->
 
 </databaseChangeLog>

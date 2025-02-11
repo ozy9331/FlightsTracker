@@ -3,7 +3,6 @@ package io.vitech.flights.tracker.openai;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.vitech.flights.tracker.helper.JsonService;
 import io.vitech.flights.tracker.helper.ResponseParser;
-import io.vitech.flights.tracker.openai.model.AirportGptModel;
 import io.vitech.flights.tracker.openai.template.ContentTemplate;
 import io.vitech.flights.tracker.openai.template.GptRequestTemplate;
 import org.slf4j.Logger;
@@ -39,7 +38,7 @@ public class OpenAIService {
         this.responseParser = responseParser1;
     }
 
-    public String getStructuredResponse(Set<AirportGptModel> requestObjects) throws JsonProcessingException {
+    public <T> String getStructuredResponse(Set<T> requestObjects) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey);
@@ -48,7 +47,7 @@ public class OpenAIService {
 
         GptRequestTemplate contentTemplate = new GptRequestTemplate(requestBody);
 
-        LOGGER.info("requestObject = " + contentTemplate.toJson());
+        LOGGER.info("RequestObject = {}", contentTemplate.toJson());
 
         HttpEntity<String> entity = new HttpEntity<>(contentTemplate.toJson(), headers);
 
