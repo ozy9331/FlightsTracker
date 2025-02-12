@@ -4,7 +4,7 @@ import io.vitech.flights.tracker.entity.AircraftType;
 import io.vitech.flights.tracker.helper.ChunkProcessor;
 import io.vitech.flights.tracker.helper.ResponseParser;
 import io.vitech.flights.tracker.openai.OpenAIService;
-import io.vitech.flights.tracker.openai.model.AircraftTypeGptModel;
+import io.vitech.flights.tracker.openai.model.AircraftTypePromptModel;
 import io.vitech.flights.tracker.processor.BaseProcessor;
 import io.vitech.flights.tracker.repository.AircraftRepository;
 import io.vitech.flights.tracker.repository.AircraftTypeRepository;
@@ -43,34 +43,34 @@ public class AircraftTypeProcessor extends BaseProcessor {
     public void process() {
         LOGGER.debug(PROCESSING_START_LOG_MSG_TEMPLATE, this.getClass().getSimpleName());
 
-        final Set<AircraftTypeGptModel> aircraftTypeGptModels = new HashSet<>();
+        final Set<AircraftTypePromptModel> aircraftTypePromptModels = new HashSet<>();
 
-        aircraftTypeGptModels.addAll(aircraftRepository.findAllWithNullAircraftType().stream()
-                .map(a -> AircraftTypeGptModel.builder().IataShortCode(a.getIataCode()).build())
+        aircraftTypePromptModels.addAll(aircraftRepository.findAllWithNullAircraftType().stream()
+                .map(a -> AircraftTypePromptModel.builder().iataShortCode(a.getIataCode()).build())
                 .collect(Collectors.toSet()));
 
-        if(aircraftTypeGptModels.isEmpty()) {
+        if(aircraftTypePromptModels.isEmpty()) {
             LOGGER.debug("No aircraft type to process.");
             return;
         }
 
-        List<Set<AircraftTypeGptModel>> chunks = ChunkProcessor.chunkify(aircraftTypeGptModels, chunkSize);
+        List<Set<AircraftTypePromptModel>> chunks = ChunkProcessor.chunkify(aircraftTypePromptModels, chunkSize);
 
         try {
-            for (Set<AircraftTypeGptModel> chunk : chunks) {
+            for (Set<AircraftTypePromptModel> chunk : chunks) {
                 LOGGER.debug("Processing chunk: {}", chunk);
                 // Process each chunk
                 String structuredResponse = openAIService.getStructuredResponse(chunk);
                 LOGGER.debug("StructuredResponse = {}", structuredResponse);
 
-                List<AircraftTypeGptModel> aircraftModels = responseParser.parseResponse(structuredResponse, AircraftTypeGptModel.class);
-                aircraftModels.forEach(aircraftTypeGptModel -> {
-                    if (StringUtils.isNotBlank(aircraftTypeGptModel.getAircraftType()) && aircraftTypeRepository.findByIataCodeAndType(aircraftTypeGptModel.getIataShortCode(), aircraftTypeGptModel.getAircraftType()).isEmpty()) {
+                List<AircraftTypePromptModel> aircraftModels = responseParser.parseResponse(structuredResponse, AircraftTypePromptModel.class);
+                aircraftModels.forEach(aircraftTypePromptModel -> {
+                    if (StringUtils.isNotBlank(aircraftTypePromptModel.getAircraftType()) && aircraftTypeRepository.findByIataCodeAndType(aircraftTypePromptModel.getIataShortCode(), aircraftTypePromptModel.getAircraftType()).isEmpty()) {
 
-                        LOGGER.debug("Aircraft type [{}] DOES NOT EXIST in DB. " , aircraftTypeGptModel);
-                        aircraftTypeRepository.save(AircraftType.builder().type(aircraftTypeGptModel.getAircraftType()).iataCode(aircraftTypeGptModel.getIataShortCode()).build());
+                        LOGGER.debug("Aircraft type [{}] DOES NOT EXIST in DB. " , aircraftTypePromptModel);
+                        aircraftTypeRepository.save(AircraftType.builder().type(aircraftTypePromptModel.getAircraftType()).iataCode(aircraftTypePromptModel.getIataShortCode()).build());
                     }else {
-                        LOGGER.debug("Airport [{}] skipped and will not be saved to DB.", aircraftTypeGptModel);
+                        LOGGER.debug("Airport [{}] skipped and will not be saved to DB.", aircraftTypePromptModel);
                     }
                 });
 

@@ -32,9 +32,13 @@ vitech:
     openai:
       api:
         url : https://api.openai.com/v1/chat/completions
+        r
     processor:
       airport:
         enabled: false
+        chunk-size: 1000
+      airline:
+        enabled: true
         chunk-size: 1000
       range:
         enabled: true

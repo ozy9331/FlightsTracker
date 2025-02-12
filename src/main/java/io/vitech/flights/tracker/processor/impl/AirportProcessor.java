@@ -5,7 +5,7 @@ import io.vitech.flights.tracker.helper.ChunkProcessor;
 import io.vitech.flights.tracker.helper.ResponseParser;
 import io.vitech.flights.tracker.mapper.AirportMapper;
 import io.vitech.flights.tracker.openai.OpenAIService;
-import io.vitech.flights.tracker.openai.model.AirportGptModel;
+import io.vitech.flights.tracker.openai.model.AirportPromptModel;
 import io.vitech.flights.tracker.processor.BaseProcessor;
 import io.vitech.flights.tracker.repository.AirportRepository;
 import io.vitech.flights.tracker.repository.FlightRepository;
@@ -47,38 +47,38 @@ public class AirportProcessor extends BaseProcessor {
     public void process() {
         LOGGER.debug(PROCESSING_START_LOG_MSG_TEMPLATE, this.getClass().getSimpleName());
 
-        final Set<AirportGptModel> airportGptModels = new HashSet<>();
+        final Set<AirportPromptModel> airportPromptModels = new HashSet<>();
 
-        airportGptModels.addAll(flightRepository.findAllByNullDepartureAirportIdAndStatus("LANDED").stream()
-                .map(f -> AirportGptModel.builder().iata(f.getDepartureIataCode()).build())
+        airportPromptModels.addAll(flightRepository.findAllByNullDepartureAirportIdAndStatus("LANDED").stream()
+                .map(f -> AirportPromptModel.builder().iata(f.getDepartureIataCode()).build())
                 .collect(Collectors.toSet()));
 
-        airportGptModels.addAll(flightRepository.findAllByNullArrivalAirportIdAndStatus("LANDED").stream()
-                .map(f -> AirportGptModel.builder().iata(f.getArrivalIataCode()).build())
+        airportPromptModels.addAll(flightRepository.findAllByNullArrivalAirportIdAndStatus("LANDED").stream()
+                .map(f -> AirportPromptModel.builder().iata(f.getArrivalIataCode()).build())
                 .collect(Collectors.toSet()));
 
-        if(airportGptModels.isEmpty()) {
+        if(airportPromptModels.isEmpty()) {
             LOGGER.debug("No flights airports to process.");
             return;
         }
 
-        List<Set<AirportGptModel>> chunks = ChunkProcessor.chunkify(airportGptModels, chunkSize);
+        List<Set<AirportPromptModel>> chunks = ChunkProcessor.chunkify(airportPromptModels, chunkSize);
 
         try {
-            for (Set<AirportGptModel> chunk : chunks) {
+            for (Set<AirportPromptModel> chunk : chunks) {
                 LOGGER.debug("Processing chunk: {}", chunk);
                 // Process each chunk
                 String structuredResponse = ""; openAIService.getStructuredResponse(chunk);
                 LOGGER.debug("StructuredResponse = {}", structuredResponse);
 
-                List<AirportGptModel> airports = responseParser.parseResponse(structuredResponse, AirportGptModel.class);
-                airports.forEach(airportGptModel -> {
-                    if (StringUtils.isNotBlank(airportGptModel.getName()) && airportRepository.findByIataCodeAndName(airportGptModel.getIata(), airportGptModel.getName()).isEmpty()) {
+                List<AirportPromptModel> airports = responseParser.parseResponse(structuredResponse, AirportPromptModel.class);
+                airports.forEach(airportPromptModel -> {
+                    if (StringUtils.isNotBlank(airportPromptModel.getName()) && airportRepository.findByIataCodeAndName(airportPromptModel.getIata(), airportPromptModel.getName()).isEmpty()) {
 
-                        LOGGER.debug("Airport [{}] DOES NOT EXIST in DB. " , airportGptModel);
-                        airportRepository.save(airportMapper.toEntity(airportGptModel));
+                        LOGGER.debug("Airport [{}] DOES NOT EXIST in DB. " , airportPromptModel);
+                        airportRepository.save(airportMapper.toEntity(airportPromptModel));
                     }else {
-                        LOGGER.debug("Airport [{}] skipped and will not be saved to DB.", airportGptModel);
+                        LOGGER.debug("Airport [{}] skipped and will not be saved to DB.", airportPromptModel);
                     }
                 });
             }

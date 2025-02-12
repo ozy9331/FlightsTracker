@@ -4,7 +4,7 @@ package io.vitech.flights.tracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.vitech.flights.tracker.openai.model.GptRequestModel;
+import io.vitech.flights.tracker.openai.model.PromptModel;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "city")
-public class CityEntity implements GptRequestModel {
+@Table(name = "cities")
+public class CityEntity implements PromptModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

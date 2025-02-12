@@ -1,6 +1,6 @@
 package io.vitech.flights.tracker.entity;
 
-import io.vitech.flights.tracker.openai.model.GptRequestModel;
+import io.vitech.flights.tracker.openai.model.PromptModel;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "airport")
-public class AirportEntity implements GptRequestModel {
+public class AirportEntity implements PromptModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,7 @@ public class AirportEntity implements GptRequestModel {
     @Column(name = "iata_code")
     private String iataCode;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "city_id", referencedColumnName = "id")
     private CityEntity city;
 }

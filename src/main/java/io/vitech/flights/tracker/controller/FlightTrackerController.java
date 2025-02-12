@@ -67,8 +67,8 @@ public class FlightTrackerController {
             @ApiResponse(responseCode = "200", description = "List of flights retrieved successfully")
     })
     @GetMapping("/airports")
-    public ResponseEntity<Page<AirportEntity>> getAllAirports (Pageable pageable, @RequestParam(required = false) Integer size) {
-        return ResponseEntity.ok(airportService.getAllAirports(PageRequest.of(pageable.getPageNumber(), getPageSize(size))));
+    public ResponseEntity<Page<AirportEntity>> getAllAirports (Pageable pageable, @RequestParam(required = false) Integer size, @RequestParam(required = false) String name, @RequestParam(required = false) String city) {
+        return ResponseEntity.ok(airportService.getAllAirports(PageRequest.of(pageable.getPageNumber(), getPageSize(size)), name, city));
     }
 
     @Operation(summary = "Get an airport by ID")
@@ -79,8 +79,8 @@ public class FlightTrackerController {
 
     @Operation(summary = "Get all cities")
     @GetMapping("/cities")
-    public ResponseEntity<Page<CityEntity>> getAllCities(Pageable pageable, @RequestParam(required = false) Integer size) {
-        return ResponseEntity.ok(cityService.getAllCities(PageRequest.of(pageable.getPageNumber(), getPageSize(size))));
+    public ResponseEntity<Page<CityEntity>> getAllCities(Pageable pageable, @RequestParam(required = false) Integer size, @RequestParam(required = false) String name) {
+        return ResponseEntity.ok(cityService.getAllCities(PageRequest.of(pageable.getPageNumber(), getPageSize(size)), name));
     }
 
     @Operation(summary = "Get a city by ID")

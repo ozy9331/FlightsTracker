@@ -3,10 +3,12 @@ package io.vitech.flights.tracker.openai.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 
 @Getter
 @Setter
@@ -14,13 +16,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
-public class AirportGptModel implements GptRequestModel {
+@EqualsAndHashCode
+public class AircraftTypePromptModel implements PromptModel {
+
     @JsonProperty
-    private String name;
+    private String iataShortCode;
     @JsonProperty
-    private String iata;
-    @JsonProperty
-    private String cityName;
-    @JsonProperty
-    private String timezone;
+    private String aircraftType;
 }

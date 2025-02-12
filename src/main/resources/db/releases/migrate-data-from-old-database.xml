@@ -14,7 +14,7 @@
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
     <!-- This change set inserts distinct flight statuses from historical_flight_raw into flight_status table -->
-    <changeSet id="put-data-to-status" author="yuzdzhan.ahmed">
+    <changeSet id="put-data-to-flight-status" author="yuzdzhan.ahmed">
         <sql>
             INSERT INTO flight_status (status)
             SELECT DISTINCT flight_status
@@ -71,24 +71,24 @@
         </sql>
     </changeSet>
 
-    <changeSet id="migrate-data-to-airline" author="yuzdzhan.ahmed">
+    <changeSet id="put-data-to-airline-status" author="yuzdzhan.ahmed">
         <sql>
-            INSERT INTO airline (airline_name, icao_code, iata_code)
-            SELECT DISTINCT airline_name, icao_code, iata_code
+            INSERT INTO airline_status (status)
+            SELECT DISTINCT status
             FROM airline_raw
-            WHERE airline_name IS NOT NULL
-            AND airline_name NOT IN ('Blocked');
+            WHERE status IS NOT NULL
+            AND status NOT IN (SELECT status FROM airline_status);
         </sql>
     </changeSet>
 
-<!--    <changeSet id="migrate-data-to-aircraft" author="yuzdzhan.ahmed">-->
-<!--        <sql>-->
-<!--            INSERT INTO aircraft (aircraft_model, aircraft_reg, aita_assignment, aircraft_age)-->
-<!--            SELECT production_line, registration_number, iata_code_short, plane_age-->
-<!--            FROM airplane_raw-->
-<!--            WHERE registration_number IS NOT NULL;-->
-<!--        </sql>-->
-<!--    </changeSet>-->
+    <changeSet id="migrate-data-to-airline" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO airline (airline_name, icao_code, iata_code, date_founded, fleet_size, airline_status_id)
+            SELECT DISTINCT airline_name, icao_code, iata_code, date_founded, TRY_CAST(fleet_size AS INT), ast.id
+            FROM airline_raw
+            JOIN airline_status ast ON airline_raw.status = ast.status;
+        </sql>
+    </changeSet>
 
     <changeSet id="migrate-data-to-aircraft" author="yuzdzhan.ahmed">
         <sql>

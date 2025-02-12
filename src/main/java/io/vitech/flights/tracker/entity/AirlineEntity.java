@@ -36,5 +36,5 @@ public class AirlineEntity {
     private String dateFounded;
 
     @Column(name = "fleet_size")
-    private int fleetSize;
+    private Integer fleetSize;
 }

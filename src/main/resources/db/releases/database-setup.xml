@@ -107,6 +107,19 @@
             <column name="aircraft_reg"/>
         </createIndex>
 
+        <createTable tableName="airline_status">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_status" tableName="airline_status">
+            <column name="status"/>
+        </createIndex>
+
         <createTable tableName="airline">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -116,7 +129,14 @@
             <column name="iata_code" type="varchar(10)"/>
             <column name="date_founded" type="varchar(10)"/>
             <column name="fleet_size" type="INT"/>
+            <column name="airline_status_id" type="INT"/>
         </createTable>
+
+        <addForeignKeyConstraint baseTableName="airline"
+                                 baseColumnNames="airline_status_id"
+                                 constraintName="fk_airline_status"
+                                 referencedTableName="airline_status"
+                                 referencedColumnNames="id"/>
 
         <createTable tableName="flight">
             <column name="id" type="bigint" autoIncrement="true">
@@ -182,14 +202,6 @@
                                  referencedTableName="airline"
                                  referencedColumnNames="id"/>
 
-    </changeSet>
-
-
-    <changeSet id="add-unique-constraint-airplane-name-icao_code-iata_code" author="yuzdzhan.ahmed">
-        <addUniqueConstraint
-                columnNames="airline_name, icao_code, iata_code"
-                constraintName="uk_airline_name_icao_code"
-                tableName="airline"/>
     </changeSet>
 
     <changeSet id="create-index-airline-iata" author="yuzdzhan.ahmed">

@@ -57,6 +57,7 @@ public class OpenAIService {
                 entity,
                 String.class
         );
+        LOGGER.info("Response = {}", response);
 
         return responseParser.parseJsonResponse(response.getBody());
     }

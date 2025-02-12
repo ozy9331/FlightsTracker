@@ -1,6 +1,7 @@
 package io.vitech.flights.tracker.service;
 
 import io.vitech.flights.tracker.entity.CityEntity;
+import io.vitech.flights.tracker.helper.Validator;
 import io.vitech.flights.tracker.repository.CityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +14,10 @@ public class CityService {
     public CityService(CityRepository cityRepository) {
         this.cityRepository = cityRepository;
     }
-    public Page<CityEntity> getAllCities(PageRequest pageRequest) {
+    public Page<CityEntity> getAllCities(PageRequest pageRequest, String name) {
+        if (Validator.isValidAutocomplete(name)) {
+            return cityRepository.findByName(name, pageRequest);
+        }
        return cityRepository.findAll(pageRequest);
     }
 
