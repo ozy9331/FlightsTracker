@@ -20,7 +20,13 @@ public class AirportPromptModel implements PromptModel {
     @JsonProperty
     private String iata;
     @JsonProperty
+    private String latitude;
+    @JsonProperty
+    private String longitude;
+    @JsonProperty
     private String cityName;
+    @JsonProperty
+    private String cityIata;
     @JsonProperty
     private String timezone;
 }

@@ -22,9 +22,6 @@
             </column>
         </createTable>
 
-        <createIndex indexName="idx_timezone" tableName="timezones">
-            <column name="timezone"/>
-        </createIndex>
 
         <createTable tableName="cities">
             <column name="id" type="bigint" autoIncrement="true">
@@ -35,21 +32,6 @@
             <column name="timezone_id" type="BIGINT" />
         </createTable>
 
-        <addForeignKeyConstraint constraintName="fk_city_timezone"
-                                 baseTableName="cities"
-                                 baseColumnNames="timezone_id"
-                                 referencedTableName="timezones"
-                                 referencedColumnNames="id"/>
-
-        <addUniqueConstraint
-                columnNames="city_name, iata_code"
-                constraintName="uk_city_name_iata_code"
-                tableName="cities"/>
-
-        <createIndex indexName="idx_city_name" tableName="cities">
-            <column name="city_name"/>
-        </createIndex>
-
         <createTable tableName="flight_status">
             <column name="id" type="INT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -58,10 +40,6 @@
                 <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
-
-        <createIndex indexName="idx_status" tableName="flight_status">
-            <column name="status"/>
-        </createIndex>
 
         <createTable tableName="aircraft_type">
             <column name="Id" type="BIGINT" autoIncrement="true">
@@ -96,17 +74,6 @@
             <column name="airline_id" type="BIGINT"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="aircraft"
-                                 baseColumnNames="aircraft_type_id"
-                                 constraintName="fk_aircraft_aircraft_type"
-                                 referencedTableName="aircraft_type"
-                                 referencedColumnNames="id"/>
-
-
-        <createIndex indexName="idx_aircraft_reg" tableName="aircraft">
-            <column name="aircraft_reg"/>
-        </createIndex>
-
         <createTable tableName="airline_status">
             <column name="id" type="INT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -115,10 +82,6 @@
                 <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
-
-        <createIndex indexName="idx_status" tableName="airline_status">
-            <column name="status"/>
-        </createIndex>
 
         <createTable tableName="airline">
             <column name="id" type="bigint" autoIncrement="true">
@@ -132,11 +95,16 @@
             <column name="airline_status_id" type="INT"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="airline"
-                                 baseColumnNames="airline_status_id"
-                                 constraintName="fk_airline_status"
-                                 referencedTableName="airline_status"
-                                 referencedColumnNames="id"/>
+        <createTable tableName="airport">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="airport_name" type="varchar(250)"/>
+            <column name="iata_code" type="varchar(20)"/>
+            <column name="latitude" type="float"/>
+            <column name="longitude" type="float"/>
+            <column name="city_id" type="bigint" />
+        </createTable>
 
         <createTable tableName="flight">
             <column name="id" type="bigint" autoIncrement="true">
@@ -145,7 +113,7 @@
             <column name="flight_date" type="date" />
             <column name="departure_time" type="varchar(155)" />
             <column name="arrival_time" type="varchar(155)" />
-            <column name="range" type="bigint" />
+            <column name="range" type="double" />
             <column name="departure_airport_id" type="bigint" />
             <column name="arrival_airport_id" type="bigint" />
             <column name="flight_status_id" type="int" />
@@ -155,70 +123,7 @@
             <column name="arrival_iata_code" type="varchar(20)" />
             <column name="airline_iata" type="varchar(20)" />
             <column name="airline_icao" type="varchar(20)" />
+            <column name="aircraft_registration" type="varchar(50)" />
         </createTable>
-
-        <createTable tableName="airport">
-            <column name="id" type="bigint" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="airport_name" type="varchar(250)"/>
-            <column name="iata_code" type="varchar(20)"/>
-            <column name="city_id" type="bigint" />
-        </createTable>
-
-        <addForeignKeyConstraint baseTableName="aircraft"
-                                 baseColumnNames="airline_id"
-                                 constraintName="fk_aircraft_airline"
-                                 referencedTableName="airline"
-                                 referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint constraintName="fk_flight2departure"
-                                 baseTableName="flight"
-                                 baseColumnNames="departure_airport_id"
-                                 referencedTableName="airport"
-                                 referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint constraintName="fk_flight2arrival"
-                                 baseTableName="flight"
-                                 baseColumnNames="arrival_airport_id"
-                                 referencedTableName="airport"
-                                 referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint constraintName="fk_flight2status"
-                                 baseTableName="flight"
-                                 baseColumnNames="flight_status_id"
-                                 referencedTableName="flight_status"
-                                 referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint constraintName="fk_airport2city"
-                                 baseTableName="airport"
-                                 baseColumnNames="city_id"
-                                 referencedTableName="cities"
-                                 referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint constraintName="fk_flight2airline"
-                                 baseTableName="flight"
-                                 baseColumnNames="airline_id"
-                                 referencedTableName="airline"
-                                 referencedColumnNames="id"/>
-
-    </changeSet>
-
-    <changeSet id="create-index-airline-iata" author="yuzdzhan.ahmed">
-        <createIndex indexName="idx_airline_iata" tableName="airline">
-            <column name="iata_code"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet id="create-index-airline-icao" author="yuzdzhan.ahmed">
-        <createIndex indexName="idx_airline_icao" tableName="airline">
-            <column name="icao_code"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet id="create-index-airport-iata" author="yuzdzhan.ahmed">
-        <createIndex indexName="idx_airport_iata" tableName="airport">
-            <column name="iata_code"/>
-        </createIndex>
     </changeSet>
 </databaseChangeLog>

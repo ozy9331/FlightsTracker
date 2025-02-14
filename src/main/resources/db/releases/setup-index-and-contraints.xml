@@ -1,0 +1,126 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+            http://www.liquibase.org/xml/ns/dbchangelog-ext
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+            http://www.liquibase.org/xml/ns/pro
+            http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+
+    <changeSet id="setup-indexes" author="yuzdzhan.ahmed">
+
+        <createIndex indexName="idx_timezone" tableName="timezones">
+            <column name="timezone"/>
+        </createIndex>
+
+        <createIndex indexName="idx_city_name" tableName="cities">
+            <column name="city_name"/>
+        </createIndex>
+
+        <createIndex indexName="idx_status" tableName="flight_status">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="idx_aircraft_reg" tableName="aircraft">
+            <column name="aircraft_reg"/>
+        </createIndex>
+
+        <createIndex indexName="idx_status" tableName="airline_status">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="idx_airline_iata" tableName="airline">
+            <column name="iata_code"/>
+        </createIndex>
+
+        <createIndex indexName="idx_airline_icao" tableName="airline">
+            <column name="icao_code"/>
+        </createIndex>
+
+        <createIndex indexName="idx_airport_iata" tableName="airport">
+            <column name="iata_code"/>
+        </createIndex>
+
+        <createIndex
+                indexName="idx_flight_departure_arrival_range"
+                tableName="flight">
+            <column name="departure_airport_id"/>
+            <column name="arrival_airport_id"/>
+            <column name="range"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="setup-unique-constraints" author="yuzdzhan.ahmed">
+
+        <addUniqueConstraint
+                columnNames="city_name, iata_code"
+                constraintName="uk_city_name_iata_code"
+                tableName="cities"/>
+
+    </changeSet>
+
+    <changeSet id="setup-foreign-key-constraints" author="yuzdzhan.ahmed">
+
+        <addForeignKeyConstraint constraintName="fk_city_timezone"
+                                 baseTableName="cities"
+                                 baseColumnNames="timezone_id"
+                                 referencedTableName="timezones"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="aircraft"
+                                 baseColumnNames="aircraft_type_id"
+                                 constraintName="fk_aircraft_aircraft_type"
+                                 referencedTableName="aircraft_type"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="airline"
+                                 baseColumnNames="airline_status_id"
+                                 constraintName="fk_airline_status"
+                                 referencedTableName="airline_status"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="aircraft"
+                                 baseColumnNames="airline_id"
+                                 constraintName="fk_aircraft_airline"
+                                 referencedTableName="airline"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_flight2departure"
+                                 baseTableName="flight"
+                                 baseColumnNames="departure_airport_id"
+                                 referencedTableName="airport"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_flight2arrival"
+                                 baseTableName="flight"
+                                 baseColumnNames="arrival_airport_id"
+                                 referencedTableName="airport"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_flight2status"
+                                 baseTableName="flight"
+                                 baseColumnNames="flight_status_id"
+                                 referencedTableName="flight_status"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_airport2city"
+                                 baseTableName="airport"
+                                 baseColumnNames="city_id"
+                                 referencedTableName="cities"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_flight2airline"
+                                 baseTableName="flight"
+                                 baseColumnNames="airline_id"
+                                 referencedTableName="airline"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
+
+</databaseChangeLog>

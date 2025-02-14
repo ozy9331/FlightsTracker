@@ -9,6 +9,8 @@ import io.vitech.flights.tracker.entity.AirlineEntity;
 import io.vitech.flights.tracker.entity.AirportEntity;
 import io.vitech.flights.tracker.entity.CityEntity;
 import io.vitech.flights.tracker.entity.FlightEntity;
+import io.vitech.flights.tracker.repository.dto.BusiestDayResponse;
+import io.vitech.flights.tracker.repository.dto.TopDestinationDTO;
 import io.vitech.flights.tracker.service.AircraftService;
 import io.vitech.flights.tracker.service.AirlineService;
 import io.vitech.flights.tracker.service.AirportService;
@@ -52,8 +54,10 @@ public class FlightTrackerController {
 
     @Operation(summary = "Get all flights with pagination")
     @GetMapping("/flights")
-    public ResponseEntity<Page<FlightEntity>> getAllFlights(Pageable pageable, @RequestParam(required = false) Integer size) {
-        return ResponseEntity.ok(flightService.getAllFlights(PageRequest.of(pageable.getPageNumber(), getPageSize(size))));
+    public ResponseEntity<Page<FlightEntity>> getAllFlights(Pageable pageable, @RequestParam(required = false) Integer size,
+                                                            @RequestParam(required = false) Integer rangeStart,
+                                                            @RequestParam(required = false) Integer rangeEnd) {
+        return ResponseEntity.ok(flightService.getAllFlights(PageRequest.of(pageable.getPageNumber(), getPageSize(size)), rangeStart, rangeEnd));
     }
 
     @Operation(summary = "Get a flight by ID")
@@ -154,6 +158,23 @@ public class FlightTrackerController {
                 return ResponseEntity.badRequest().body("Invalid type parameter");
         }
         return ResponseEntity.badRequest().body("Type not implemented yet");
+    }
+
+    @GetMapping("/top-destinations")
+    public List<TopDestinationDTO> getTopDestinations(
+            @RequestParam(defaultValue = "5") int limit,
+            @RequestParam(required = false) Double startRange,
+            @RequestParam(required = false) Double endRange) {
+
+        return flightService.getTopDestinations(limit, startRange, endRange);
+    }
+
+    @GetMapping("/busiest-day")
+    public ResponseEntity<List<BusiestDayResponse>> getBusiestDay(
+            @RequestParam(required = false) Double startRange,
+            @RequestParam(required = false) Double endRange) {
+
+        return ResponseEntity.ok().body(flightService.getBusiestDays(startRange, endRange));
     }
 
 

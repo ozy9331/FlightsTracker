@@ -22,7 +22,7 @@ public class FlightEntity {
     private ZonedDateTime flightDate;
     private String departureTime;
     private String arrivalTime;
-    private Integer range;
+    private Double range;
 
     @JsonIgnore
     private String departureIataCode;
@@ -32,6 +32,8 @@ public class FlightEntity {
     private String airlineIata;
     @JsonIgnore
     private String airlineIcao;
+    @JsonIgnore
+    private String aircraftRegistration;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "flight_status_id", referencedColumnName = "id")

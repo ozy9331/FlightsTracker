@@ -59,15 +59,10 @@
 
     <changeSet id="migrate-data-to-airport" author="yuzdzhan.ahmed">
         <sql>
-            INSERT INTO airport (airport_name, iata_code, city_id)
-            SELECT DISTINCT ar.airport_name, ar.iata_code, c.id
+            INSERT INTO airport (airport_name, iata_code, latitude, longitude, city_id)
+            SELECT ar.airport_name, ar.iata_code, ar.latitude, ar.longitude, c.id
             FROM airport_raw ar
-            JOIN cities c ON ar.city_iata_code = c.iata_code
-            LEFT JOIN airport a ON ar.airport_name = a.airport_name AND ar.iata_code = a.iata_code
-            WHERE ar.airport_name IS NOT NULL
-            AND ar.iata_code IS NOT NULL
-            AND c.id IS NOT NULL
-            AND a.id IS NULL;
+            LEFT JOIN cities c ON ar.city_iata_code = c.iata_code;
         </sql>
     </changeSet>
 
@@ -104,20 +99,21 @@
         </sql>
     </changeSet>
 
-    <changeSet id="update-NULL-flight-status-to-unknown" author="yuzdzhan.ahmed">
-        <sql>
-            UPDATE historical_flight_raw
-            SET flight_status = 'UNKNOWN'
-            WHERE flight_status IS NULL;
-        </sql>
-    </changeSet>
+<!--    <changeSet id="update-NULL-flight-status-to-unknown" author="yuzdzhan.ahmed">-->
+<!--        <sql>-->
+<!--            UPDATE historical_flight_raw-->
+<!--            SET flight_status = 'UNKNOWN'-->
+<!--            WHERE flight_status IS NULL;-->
+<!--        </sql>-->
+<!--    </changeSet>-->
 
     <changeSet id="update-departure-actual-with-scheduled" author="yuzdzhan.ahmed">
         <sql>
             UPDATE historical_flight_raw
             SET departure_actual = departure_scheduled
             WHERE departure_actual IS NULL
-            AND departure_scheduled IS NOT NULL;
+            AND departure_scheduled IS NOT NULL
+            AND flight_status = 'LANDED';
         </sql>
     </changeSet>
 
@@ -126,7 +122,8 @@
             UPDATE historical_flight_raw
             SET arrival_actual = arrival_scheduled
             WHERE arrival_actual IS NULL
-            AND arrival_scheduled IS NOT NULL;
+            AND arrival_scheduled IS NOT NULL
+            AND flight_status = 'LANDED';
         </sql>
     </changeSet>
 
@@ -141,6 +138,7 @@
             arrival_iata_code,
             airline_iata,
             airline_icao,
+            aircraft_registration,
             flight_status_id,
             departure_airport_id,
             arrival_airport_id,
@@ -156,6 +154,7 @@
             hfr.arrival_iata AS arrival_iata_code,
             hfr.airline_iata AS airline_iata,
             hfr.airline_icao AS airline_icao,
+            hfr.aircraft_registration AS aircraft_registration,
             (SELECT id FROM flight_status WHERE status = 'LANDED') AS flight_status_id,
             NULL AS departure_airport_id,
             NULL AS arrival_airport_id,
@@ -186,6 +185,39 @@
             WHERE flight.arrival_airport_id IS NULL;
         </sql>
     </changeSet>
+
+    <changeSet id="update-airline-id-with-iata" author="yuzdzhan.ahmed">
+        <sql>
+            UPDATE flight
+            SET airline_id = airline.id
+            FROM flight
+            JOIN airline ON flight.airline_iata = airline.iata_code
+            WHERE flight.airline_id IS NULL;
+        </sql>
+    </changeSet>
+
+    <changeSet id="update-airline-id-with-icao" author="yuzdzhan.ahmed">
+        <sql>
+            UPDATE flight
+            SET airline_id = airline.id
+            FROM flight
+            JOIN airline ON flight.airline_icao = airline.icao_code
+            WHERE flight.airline_id IS NULL;
+        </sql>
+    </changeSet>
+
+    <!-- Changeset to insert data with valid numeric values -->
+    <changeSet id="valid-numeric-values" author="yuzdzhan.ahmed">
+        <sql>
+            INSERT INTO airport (latitude, longitude)
+            SELECT
+                CASE WHEN ISNUMERIC(latitude) = 1 THEN CAST(latitude AS FLOAT) ELSE NULL END,
+                CASE WHEN ISNUMERIC(longitude) = 1 THEN CAST(longitude AS FLOAT) ELSE NULL END
+            FROM airport;
+        </sql>
+    </changeSet>
+
+
 
 <!--    <changeSet id="update-airline-id-iata" author="yuzdzhan.ahmed">-->
 <!--        <sql>-->

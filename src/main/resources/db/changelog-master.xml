@@ -14,5 +14,6 @@
 
     <include file="./releases/database-setup.xml" relativeToChangelogFile="true"/>
     <include file="./releases/migrate-data-from-old-database.xml" relativeToChangelogFile="true"/>
+    <include file="./releases/setup-index-and-contraints.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

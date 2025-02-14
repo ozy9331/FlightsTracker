@@ -33,6 +33,10 @@ public interface AirportMapper extends BaseMapper<AirportEntity, AirportPromptMo
     }
 
     @Override
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "latitude", target = "latitude")
+    @Mapping(source = "longitude", target = "longitude")
+    @Mapping(source = "iata", target = "iataCode")
     AirportEntity toEntity(AirportPromptModel airportPromptModel);
 
     @AfterMapping

@@ -32,19 +32,25 @@ vitech:
     openai:
       api:
         url : https://api.openai.com/v1/chat/completions
-        r
+
     processor:
+      flight:
+        enabled: false
+        chunk-size: 10
       airport:
         enabled: false
         chunk-size: 1000
+      airport-entity:
+        enabled: false
+        chunk-size: 1000
       airline:
-        enabled: true
+        enabled: false
         chunk-size: 1000
       range:
         enabled: true
         chunk-size: 1000
       aircraft-type:
-        enabled: true
+        enabled: false
         chunk-size: 1000
     pagination:
       default-page-size: 10
@@ -60,7 +66,7 @@ logging:
     #org.springframework : DEBUG
     org:
       hibernate:
-        SQL: DEBUG
+        SQL: OFF
         type:
           descriptor:
             sql:

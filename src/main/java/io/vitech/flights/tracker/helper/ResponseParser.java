@@ -46,7 +46,7 @@ public class ResponseParser {
                 return dataNode.toPrettyString();
             } else {
                 LOGGER.warn("Status is false. No data extracted." + jsonString);
-                throw new IllegalArgumentException("No data extracted.");
+                return "[]";
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

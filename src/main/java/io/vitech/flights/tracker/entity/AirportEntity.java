@@ -34,9 +34,14 @@ public class AirportEntity implements PromptModel {
 
     //The iata_code of an airport is a unique three-letter code assigned by the International Air Transport Association (IATA) to identify airports around the world.
     // This code is commonly used in airline timetables, tickets, and baggage tags.
-
     @Column(name = "iata_code")
     private String iataCode;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "city_id", referencedColumnName = "id")
