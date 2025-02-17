@@ -217,6 +217,16 @@
         </sql>
     </changeSet>
 
+    <changeSet id="update-aircraft-id" author="yuzdzhan.ahmed">
+        <sql>
+            UPDATE flight
+            SET aircraft_id = aircraft.id
+            FROM aircraft
+            WHERE flight.aircraft_registration = aircraft.aircraft_reg
+            AND flight.aircraft_id IS NULL;
+        </sql>
+    </changeSet>
+
 
 
 <!--    <changeSet id="update-airline-id-iata" author="yuzdzhan.ahmed">-->
