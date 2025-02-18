@@ -31,7 +31,7 @@ public class AirportService {
 
         if (Validator.isValidAutocomplete(city)) {
             System.out.println("City is valid");
-            return airportRepository.findByCityName(name, pageRequest);
+            return airportRepository.findByCityName(city, pageRequest);
         }
 
         return airportRepository.findAll(pageRequest);

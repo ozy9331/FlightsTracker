@@ -67,37 +67,49 @@ public interface FlightRepository extends JpaRepository<FlightEntity, Long> {
             SELECT TOP (:limit) 
                    a.id AS airportId, 
                    a.airport_name AS airportName, 
-                   COUNT(f.id) AS totalFlights
+                   COUNT(f.id) AS totalFlights, 
+                   c.city_name AS cityName
             FROM flight f
             JOIN airport a ON f.arrival_airport_id = a.id
+            JOIN cities c ON a.city_id = c.id
             WHERE (:startRange IS NULL OR f.range >= :startRange)
               AND (:endRange IS NULL OR f.range <= :endRange)
               AND (:startDate IS NULL OR f.flight_date >= :startDate)
               AND (:endDate IS NULL OR f.flight_date <= :endDate)
-            GROUP BY a.id, a.airport_name
+              AND (:city IS NULL OR c.city_name  LIKE :city%)
+              AND (:airportName IS NULL OR a.airport_name LIKE :airportName%)
+            GROUP BY a.id, a.airport_name, c.city_name
             ORDER BY totalFlights DESC
             """, nativeQuery = true)
     List<Object[]> findTopDestinations(@Param("limit") int limit,
                                        @Param("startRange") Double startRange,
                                        @Param("endRange") Double endRange,
                                        @Param("startDate") LocalDate startDate,
-                                       @Param("endDate") LocalDate endDate);
+                                       @Param("endDate") LocalDate endDate,
+                                       @Param("city") String city,
+                                       @Param("airportName") String airportName);
 
 
     @Query(value = """
             SELECT DATENAME(WEEKDAY, flight_date) AS dayOfWeek, COUNT(*) AS totalFlights
                         FROM flight f
+                        JOIN airport a ON f.arrival_airport_id = a.id
+                        JOIN cities c ON a.city_id = c.id
                         WHERE (:startRange IS NULL OR range >= :startRange)
                           AND (:endRange IS NULL OR range <= :endRange)
                           AND (:startDate IS NULL OR f.flight_date >= :startDate)
                           AND (:endDate IS NULL OR f.flight_date <= :endDate)
+                          AND (:city IS NULL OR c.city_name  LIKE :city%)
+                          AND (:airportName IS NULL OR a.airport_name LIKE :airportName%)
                         GROUP BY DATENAME(WEEKDAY, flight_date)
                         ORDER BY totalFlights DESC;
             """, nativeQuery = true)
     List<Object[]> findBusiestDays(@Param("startRange") Double startRange,
                                    @Param("endRange") Double endRange,
                                    @Param("startDate") LocalDate startDate,
-                                   @Param("endDate") LocalDate endDate);
+                                   @Param("endDate") LocalDate endDate,
+                                   @Param("city") String city,
+                                   @Param("airportName") String airportName);
 
     @Query(value = """
             SELECT a.airline_name, a.iata_code, COUNT(f.id) AS totalFlights
@@ -109,48 +121,64 @@ public interface FlightRepository extends JpaRepository<FlightEntity, Long> {
               AND (:endDate IS NULL OR f.flight_date <= :endDate)
             GROUP BY a.airline_name, a.iata_code
             ORDER BY totalFlights DESC
+            OFFSET 0 ROWS FETCH NEXT :limit ROWS ONLY;
             """, nativeQuery = true)
     List<Object[]> findTopAirlines(@Param("startRange") Double startRange,
                                    @Param("endRange") Double endRange,
                                    @Param("startDate") LocalDate startDate,
-                                   @Param("endDate") LocalDate endDate);
+                                   @Param("endDate") LocalDate endDate,
+                                   @Param("limit") Integer limit);
 
     @Query(value = """
                 SELECT at.type AS aircraftType, COUNT(*) AS totalFlights
                 FROM flight f
                 JOIN aircraft a ON f.aircraft_id = a.id
                 JOIN aircraft_type at ON a.aircraft_type_id = at.id
+                JOIN airport at ON f.arrival_airport_id = at.id
+                JOIN cities c ON a.city_id = c.id
                 WHERE (:startRange IS NULL OR f.range >= :startRange)
                   AND (:endRange IS NULL OR f.range <= :endRange)
                   AND (:startDate IS NULL OR f.flight_date >= :startDate)
                   AND (:endDate IS NULL OR f.flight_date <= :endDate)
+                  AND (:city IS NULL OR c.city_name  LIKE :city%)
+                  AND (:airportName IS NULL OR at.airport_name LIKE :airportName%)
                 GROUP BY at.type
                 ORDER BY totalFlights DESC
+                OFFSET 0 ROWS FETCH NEXT :limit ROWS ONLY;
             """, nativeQuery = true)
-    List<Object[]> findTopAircrafts(@Param("startRange") Double startRange,
+    List<Object[]>  findTopAircrafts(@Param("startRange") Double startRange,
                                     @Param("endRange") Double endRange,
                                     @Param("startDate") LocalDate startDate,
-                                    @Param("endDate") LocalDate endDate);
+                                    @Param("endDate") LocalDate endDate,
+                                    @Param("limit") Integer limit,
+                                    @Param("city") String city,
+                                     @Param("airportName") String airportName);
 
 
 
-    @Query(value = """ 
-            SELECT TOP (:limit) ci.city_name AS city, COUNT(f.id) AS totalFlights
+    @Query(value = """
+            SELECT ci.city_name AS city,
+                   COUNT(f.id) AS totalFlights
             FROM flight f
             JOIN airport a ON f.arrival_airport_id = a.id
             JOIN cities ci ON a.city_id = ci.id
             JOIN aircraft ac ON f.aircraft_id = ac.id
             JOIN aircraft_type atype ON ac.aircraft_type_id = atype.id
-            WHERE (:aircraftType IS NULL OR atype.type = :aircraftType)
-              AND (:startDate IS NULL OR f.flight_date >= :startDate)
-              AND (:endDate IS NULL OR f.flight_date <= :endDate)
+            WHERE (COALESCE(:aircraftType, atype.type) = atype.type)
+              AND (COALESCE(:startDate, f.flight_date) = f.flight_date OR f.flight_date >= :startDate)
+              AND (COALESCE(:endDate, f.flight_date) = f.flight_date OR f.flight_date <= :endDate)
+              AND (COALESCE(:startRange, f.range) = f.range OR f.range >= :startRange)
+              AND (COALESCE(:endRange, f.range) = f.range OR f.range <= :endRange)
             GROUP BY ci.city_name
-            ORDER BY totalFlights DESC;
+            ORDER BY totalFlights DESC
+            OFFSET 0 ROWS FETCH NEXT :limit ROWS ONLY;
             """, nativeQuery = true)
     List<Object[]> findTopDestinationCities(
             @Param("aircraftType") String aircraftType,
-            @Param("startDate") String startDate,
-            @Param("endDate") String endDate,
-            @Param("limit") int limit
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("limit") Integer limit,
+            @Param("startRange") Double startRange,
+            @Param("endRange") Double endRange
     );
 }

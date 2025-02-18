@@ -10,10 +10,6 @@ import io.vitech.flights.tracker.entity.AirportEntity;
 import io.vitech.flights.tracker.entity.CityEntity;
 import io.vitech.flights.tracker.entity.FlightEntity;
 import io.vitech.flights.tracker.exception.ErrorResponse;
-import io.vitech.flights.tracker.repository.dto.BusiestDayResponse;
-import io.vitech.flights.tracker.repository.dto.TopAircraftResponse;
-import io.vitech.flights.tracker.repository.dto.TopAirlineResponse;
-import io.vitech.flights.tracker.repository.dto.TopDestinationDTO;
 import io.vitech.flights.tracker.service.AircraftService;
 import io.vitech.flights.tracker.service.AirlineService;
 import io.vitech.flights.tracker.service.AirportService;
@@ -32,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -101,8 +96,8 @@ public class FlightTrackerController {
 
     @Operation(summary = "Get all airlines")
     @GetMapping("/airlines")
-    public ResponseEntity<Page<AirlineEntity>> getAllAirlines(Pageable pageable, @RequestParam(required = false) Integer size) {
-        return ResponseEntity.ok(airlineService.getAllAirlines(PageRequest.of(pageable.getPageNumber(), getPageSize(size))));
+    public ResponseEntity<Page<AirlineEntity>> getAllAirlines(Pageable pageable, @RequestParam(required = false) Integer size, @RequestParam(required = false) String name) {
+        return ResponseEntity.ok(airlineService.getAllAirlines(PageRequest.of(pageable.getPageNumber(), getPageSize(size)), name));
     }
 
     @Operation(summary = "Get an airline by ID")
@@ -131,20 +126,24 @@ public class FlightTrackerController {
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) Double rangeStart,
-            @RequestParam(required = false) Double rangeEnd) {
+            @RequestParam(required = false) Double rangeEnd,
+            @RequestParam(required = false) String aircraftType,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String airport) {
+
         int pageSize = getPageSize(limit);
 
         return switch (type) {
             case "destinations" ->
-                    ResponseEntity.ok(flightService.getTopDestinations(pageSize, rangeStart, rangeEnd, startDate, endDate));
+                    ResponseEntity.ok(flightService.getTopDestinations(pageSize, rangeStart, rangeEnd, startDate, endDate, city, airport));
             case "busiest-day" ->
-                    ResponseEntity.ok(flightService.getBusiestDays(rangeStart, rangeEnd, startDate, endDate));
+                    ResponseEntity.ok(flightService.getBusiestDays(rangeStart, rangeEnd, startDate, endDate, city, airport, limit));
             case "airlines" ->
-                    ResponseEntity.ok(flightService.findTopAirlines(rangeStart, rangeEnd, pageSize, startDate, endDate));
+                    ResponseEntity.ok(flightService.findTopAirlines(rangeStart, rangeEnd, pageSize, startDate, endDate, city, airport));
             case "aircrafts" ->
-                    ResponseEntity.ok(flightService.findTopAircrafts(rangeStart, rangeEnd, pageSize, startDate, endDate));
+                    ResponseEntity.ok(flightService.findTopAircrafts(rangeStart, rangeEnd, pageSize, startDate, endDate, city, airport));
             case "cities" ->
-                    ResponseEntity.ok(flightService.findTopAircrafts(rangeStart, rangeEnd, pageSize, startDate, endDate));
+                    ResponseEntity.ok(flightService.findTopDestinationCities(rangeStart, rangeEnd, pageSize , aircraftType, startDate, endDate));
 
             default -> ResponseEntity.badRequest().body( new ErrorResponse(
                     LocalDateTime.now(),
@@ -154,51 +153,6 @@ public class FlightTrackerController {
             ));
         };
     }
-
-
-//    @GetMapping("/top-destinations")
-//    public List<TopDestinationDTO> getTopDestinations(
-//            @RequestParam(defaultValue = "5") int limit,
-//            @RequestParam(required = false) Double startRange,
-//            @RequestParam(required = false) Double endRang,
-//            @RequestParam(required = false) LocalDate startDate,
-//            @RequestParam(required = false) LocalDate endDate) {
-//
-//        return flightService.getTopDestinations(limit, startRange, endRang, startDate, endDate);
-//    }
-//
-//    @GetMapping("/busiest-day")
-//    public ResponseEntity<List<BusiestDayResponse>> getBusiestDay(
-//            @RequestParam(required = false) Double startRange,
-//            @RequestParam(required = false) Double endRange,
-//            @RequestParam(required = false) LocalDate startDate,
-//            @RequestParam(required = false) LocalDate endDate) {
-//
-//        return ResponseEntity.ok().body(flightService.getBusiestDays(startRange, endRange, startDate, endDate));
-//    }
-//
-//    @GetMapping("/top-airlines")
-//    public ResponseEntity<List<TopAirlineResponse>> getTopAirlines(
-//            @RequestParam(required = false) Double startRange,
-//            @RequestParam(required = false) Double endRange,
-//            @RequestParam(required = false) Integer limit,
-//            @RequestParam(required = false) LocalDate startDate,
-//            @RequestParam(required = false) LocalDate endDate) {
-//
-//        List<TopAirlineResponse> response = flightService.findTopAirlines(startRange, endRange, limit, startDate, endDate);
-//        return ResponseEntity.ok(response);
-//    }
-//
-//    @GetMapping("/top-aircrafts")
-//    public ResponseEntity<List<TopAircraftResponse>> getTopAircrafts(@RequestParam(required = false) Double startRange,
-//                                                                     @RequestParam(required = false) Double endRange,
-//                                                                     @RequestParam(required = false) Integer limit,
-//                                                                     @RequestParam(required = false) LocalDate startDate,
-//                                                                     @RequestParam(required = false) LocalDate endDate) {
-//
-//        List<TopAircraftResponse> response = flightService.findTopAircrafts(startRange, endRange, limit, startDate, endDate);
-//        return ResponseEntity.ok(response);
-//    }
 
     private int getPageSize(Integer size) {
         return Objects.nonNull(size) && size > 0 ? Math.min(size, paginationConfig.getMaxPageSize()) : paginationConfig.getDefaultPageSize();

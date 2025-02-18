@@ -19,7 +19,7 @@ public interface AirportRepository extends JpaRepository<AirportEntity, Long> {
     @Query("SELECT a FROM AirportEntity a WHERE a.name LIKE :name%")
     Page<AirportEntity> findByName(String name, PageRequest pageRequest);
 
-    @Query("SELECT a FROM AirportEntity a WHERE a.city.name LIKE ':city%'")
+    @Query("SELECT a FROM AirportEntity a WHERE a.city.name LIKE :city%")
     Page<AirportEntity> findByCityName(String city, PageRequest pageRequest);
 
     @Query("SELECT a FROM AirportEntity a WHERE a.name LIKE :name% AND a.city.name LIKE :city%")

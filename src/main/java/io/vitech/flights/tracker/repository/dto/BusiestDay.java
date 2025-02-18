@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class BusiestDayResponse {
+public class BusiestDay {
     private String dayOfWeek;
     private long totalFlights;
 }

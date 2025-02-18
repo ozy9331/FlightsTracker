@@ -1,6 +1,7 @@
 package io.vitech.flights.tracker.service;
 
 import io.vitech.flights.tracker.entity.AirlineEntity;
+import io.vitech.flights.tracker.helper.Validator;
 import io.vitech.flights.tracker.repository.AirlineReposity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +16,10 @@ public class AirlineService {
         this.airlineReposity = airlineReposity;
     }
 
-    public Page<AirlineEntity> getAllAirlines(PageRequest pageRequest) {
+    public Page<AirlineEntity> getAllAirlines(PageRequest pageRequest, String name) {
+        if(Validator.isValidAutocomplete(name)) {
+            return airlineReposity.findByName(name, pageRequest);
+        }
         return airlineReposity.findAll(pageRequest);
     }
 
