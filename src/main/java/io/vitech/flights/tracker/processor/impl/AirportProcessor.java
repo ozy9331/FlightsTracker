@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-@ConditionalOnProperty(name = "openai.processor.airport.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "vitech.tracker.processor.airport.enabled", havingValue = "true")
 public class AirportProcessor extends BaseProcessor {
 
     private static Logger LOGGER = LoggerFactory.getLogger(AirportProcessor.class);

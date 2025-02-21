@@ -121,6 +121,11 @@
                                  referencedTableName="airline"
                                  referencedColumnNames="id"/>
 
-    </changeSet>
+        <addForeignKeyConstraint constraintName="fk_flight2aircraft"
+                                 baseTableName="flight"
+                                 baseColumnNames="aircraft_id"
+                                 referencedTableName="aircraft"
+                                 referencedColumnNames="id"/>
 
+    </changeSet>
 </databaseChangeLog>

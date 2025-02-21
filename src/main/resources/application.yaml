@@ -32,8 +32,13 @@ vitech:
     openai:
       api:
         url : https://api.openai.com/v1/chat/completions
+        key: key
+        key-statistic : key-statistic
 
     processor:
+      openai:
+        enabled: false
+        chunk-size: 10
       flight:
         enabled: false
         chunk-size: 10
@@ -50,7 +55,7 @@ vitech:
         enabled: true
         chunk-size: 1000
       aircraft-type:
-        enabled: false
+        enabled: true
         chunk-size: 1000
     pagination:
       default-page-size: 10

@@ -99,14 +99,6 @@
         </sql>
     </changeSet>
 
-<!--    <changeSet id="update-NULL-flight-status-to-unknown" author="yuzdzhan.ahmed">-->
-<!--        <sql>-->
-<!--            UPDATE historical_flight_raw-->
-<!--            SET flight_status = 'UNKNOWN'-->
-<!--            WHERE flight_status IS NULL;-->
-<!--        </sql>-->
-<!--    </changeSet>-->
-
     <changeSet id="update-departure-actual-with-scheduled" author="yuzdzhan.ahmed">
         <sql>
             UPDATE historical_flight_raw

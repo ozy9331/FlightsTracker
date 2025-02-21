@@ -3,6 +3,7 @@ package io.vitech.flights.tracker.repository;
 import io.vitech.flights.tracker.entity.AirportEntity;
 import io.vitech.flights.tracker.entity.FlightEntity;
 import io.vitech.flights.tracker.helper.AirportPair;
+import io.vitech.flights.tracker.repository.dto.FlightDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -115,10 +117,14 @@ public interface FlightRepository extends JpaRepository<FlightEntity, Long> {
             SELECT a.airline_name, a.iata_code, COUNT(f.id) AS totalFlights
             FROM flight f
             JOIN airline a ON f.airline_id = a.id
+            JOIN airport at ON f.arrival_airport_id = at.id
+            JOIN cities c ON at.city_id = c.id
             WHERE (:startRange IS NULL OR f.range >= :startRange)
               AND (:endRange IS NULL OR f.range <= :endRange)
               AND (:startDate IS NULL OR f.flight_date >= :startDate)
               AND (:endDate IS NULL OR f.flight_date <= :endDate)
+              AND (:city IS NULL OR c.city_name  LIKE :city%)
+              AND (:airportName IS NULL OR at.airport_name LIKE :airportName%)
             GROUP BY a.airline_name, a.iata_code
             ORDER BY totalFlights DESC
             OFFSET 0 ROWS FETCH NEXT :limit ROWS ONLY;
@@ -127,22 +133,24 @@ public interface FlightRepository extends JpaRepository<FlightEntity, Long> {
                                    @Param("endRange") Double endRange,
                                    @Param("startDate") LocalDate startDate,
                                    @Param("endDate") LocalDate endDate,
-                                   @Param("limit") Integer limit);
+                                   @Param("limit") Integer limit,
+                                   @Param("city") String city,
+                                   @Param("airportName") String airportName);
 
     @Query(value = """
-                SELECT at.type AS aircraftType, COUNT(*) AS totalFlights
+                SELECT act.type AS aircraftType, COUNT(*) AS totalFlights
                 FROM flight f
                 JOIN aircraft a ON f.aircraft_id = a.id
-                JOIN aircraft_type at ON a.aircraft_type_id = at.id
+                JOIN aircraft_type act ON a.aircraft_type_id = act.id
                 JOIN airport at ON f.arrival_airport_id = at.id
-                JOIN cities c ON a.city_id = c.id
+                JOIN cities c ON at.city_id = c.id
                 WHERE (:startRange IS NULL OR f.range >= :startRange)
                   AND (:endRange IS NULL OR f.range <= :endRange)
                   AND (:startDate IS NULL OR f.flight_date >= :startDate)
                   AND (:endDate IS NULL OR f.flight_date <= :endDate)
                   AND (:city IS NULL OR c.city_name  LIKE :city%)
                   AND (:airportName IS NULL OR at.airport_name LIKE :airportName%)
-                GROUP BY at.type
+                GROUP BY act.type
                 ORDER BY totalFlights DESC
                 OFFSET 0 ROWS FETCH NEXT :limit ROWS ONLY;
             """, nativeQuery = true)
@@ -181,4 +189,23 @@ public interface FlightRepository extends JpaRepository<FlightEntity, Long> {
             @Param("startRange") Double startRange,
             @Param("endRange") Double endRange
     );
+
+    @Query(" SELECT new io.vitech.flights.tracker.repository.dto.FlightDTO(f.flightDate, dep.name, depCity.name, arr.name, arrCity.name, f.range, airline.name, aircraftType.type) " +
+            "FROM FlightEntity f " +
+            "JOIN f.departureAirport dep " +
+            "JOIN dep.city depCity " +
+            "JOIN f.arrivalAirport arr " +
+            "JOIN arr.city arrCity " +
+            "JOIN f.airline airline " +
+            "JOIN f.aircraft aircraft " +
+            "JOIN aircraft.aircraftType aircraftType " +
+            "WHERE (:startRange IS NULL OR f.range >= :startRange) " +
+            "AND (:endRange IS NULL OR f.range <= :endRange) " +
+            "AND (:startDate IS NULL OR f.flightDate <= :startDate) " +
+            "AND (:endDate IS NULL OR f.flightDate <= :endDate) " +
+            "ORDER BY f.flightDate ASC")
+    List<FlightDTO> findAllFlightsInRangeDTO(@Param("startRange") Double startRange,
+                                             @Param("endRange") Double endRange,
+                                             @Param("startDate") ZonedDateTime startDate,
+                                             @Param("endDate") ZonedDateTime endDate);
 }

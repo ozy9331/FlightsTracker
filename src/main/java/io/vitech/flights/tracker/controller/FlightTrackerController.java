@@ -1,6 +1,10 @@
 package io.vitech.flights.tracker.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.vitech.flights.tracker.conf.PaginationConfig;
@@ -10,6 +14,7 @@ import io.vitech.flights.tracker.entity.AirportEntity;
 import io.vitech.flights.tracker.entity.CityEntity;
 import io.vitech.flights.tracker.entity.FlightEntity;
 import io.vitech.flights.tracker.exception.ErrorResponse;
+import io.vitech.flights.tracker.openai.AIAnalysisService;
 import io.vitech.flights.tracker.service.AircraftService;
 import io.vitech.flights.tracker.service.AirlineService;
 import io.vitech.flights.tracker.service.AirportService;
@@ -40,16 +45,18 @@ public class FlightTrackerController {
     private final CityService cityService;
     private final AirlineService airlineService;
     private final AircraftService aircraftService;
+    private final AIAnalysisService aiAnalysisService;
 
     public FlightTrackerController(AirportService airportService, FlightService flightService,
                                    CityService cityService, AirlineService airlineService,
-                                   AircraftService aircraftService, PaginationConfig paginationConfig) {
+                                   AircraftService aircraftService, PaginationConfig paginationConfig, AIAnalysisService aiAnalysisService) {
         this.airportService = airportService;
         this.flightService = flightService;
         this.cityService = cityService;
         this.airlineService = airlineService;
         this.aircraftService = aircraftService;
         this.paginationConfig = paginationConfig;
+        this.aiAnalysisService = aiAnalysisService;
     }
 
     @Operation(summary = "Get all flights with pagination")
@@ -71,7 +78,11 @@ public class FlightTrackerController {
             @ApiResponse(responseCode = "200", description = "List of flights retrieved successfully")
     })
     @GetMapping("/airports")
-    public ResponseEntity<Page<AirportEntity>> getAllAirports (Pageable pageable, @RequestParam(required = false) Integer size, @RequestParam(required = false) String name, @RequestParam(required = false) String city) {
+    public ResponseEntity<Page<AirportEntity>> getAllAirports (Pageable pageable,
+                                                               @RequestParam(required = false) Integer size,
+                                                               @RequestParam(required = false) String name,
+                                                               @RequestParam(required = false) String city) {
+
         return ResponseEntity.ok(airportService.getAllAirports(PageRequest.of(pageable.getPageNumber(), getPageSize(size)), name, city));
     }
 
@@ -83,7 +94,10 @@ public class FlightTrackerController {
 
     @Operation(summary = "Get all cities")
     @GetMapping("/cities")
-    public ResponseEntity<Page<CityEntity>> getAllCities(Pageable pageable, @RequestParam(required = false) Integer size, @RequestParam(required = false) String name) {
+    public ResponseEntity<Page<CityEntity>> getAllCities(Pageable pageable,
+                                                         @RequestParam(required = false) Integer size,
+                                                         @RequestParam(required = false) String name) {
+
         return ResponseEntity.ok(cityService.getAllCities(PageRequest.of(pageable.getPageNumber(), getPageSize(size)), name));
     }
 
@@ -96,7 +110,10 @@ public class FlightTrackerController {
 
     @Operation(summary = "Get all airlines")
     @GetMapping("/airlines")
-    public ResponseEntity<Page<AirlineEntity>> getAllAirlines(Pageable pageable, @RequestParam(required = false) Integer size, @RequestParam(required = false) String name) {
+    public ResponseEntity<Page<AirlineEntity>> getAllAirlines(Pageable pageable,
+                                                              @RequestParam(required = false) Integer size,
+                                                              @RequestParam(required = false) String name) {
+
         return ResponseEntity.ok(airlineService.getAllAirlines(PageRequest.of(pageable.getPageNumber(), getPageSize(size)), name));
     }
 
@@ -108,7 +125,8 @@ public class FlightTrackerController {
 
     @Operation(summary = "Get all aircrafts")
     @GetMapping("/aircrafts")
-    public ResponseEntity<Page<AircraftEntity>> getAllAircrafts(Pageable pageable, @RequestParam(required = false) Integer size) {
+    public ResponseEntity<Page<AircraftEntity>> getAllAircrafts(Pageable pageable,
+                                                                @RequestParam(required = false) Integer size) {
         return ResponseEntity.ok(aircraftService.getAllAircrafts(PageRequest.of(pageable.getPageNumber(), getPageSize(size))));
     }
 
@@ -120,16 +138,18 @@ public class FlightTrackerController {
 
     @Operation(summary = "Get top entities based on type")
     @GetMapping("/top")
-    public ResponseEntity<?> getTopEntities(
-            @RequestParam String type,
-            @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
-            @RequestParam(required = false) Double rangeStart,
-            @RequestParam(required = false) Double rangeEnd,
-            @RequestParam(required = false) String aircraftType,
-            @RequestParam(required = false) String city,
-            @RequestParam(required = false) String airport) {
+    public ResponseEntity<?> getTopEntities(@Parameter(in = ParameterIn.QUERY,
+                                                       description = "Type of top entities to retrieve",
+                                                       schema = @Schema(allowableValues = {"destinations", "busiest-day", "airlines", "aircrafts", "cities"}))
+                                            @RequestParam String type,
+                                            @RequestParam(required = false) Integer limit,
+                                            @RequestParam(required = false) LocalDate startDate,
+                                            @RequestParam(required = false) LocalDate endDate,
+                                            @RequestParam(required = false) Double rangeStart,
+                                            @RequestParam(required = false) Double rangeEnd,
+                                            @RequestParam(required = false) String aircraftType,
+                                            @RequestParam(required = false) String city,
+                                            @RequestParam(required = false) String airport) {
 
         int pageSize = getPageSize(limit);
 
@@ -152,6 +172,16 @@ public class FlightTrackerController {
                     "Invalid value for parameter '[type]'."
             ));
         };
+    }
+
+    @Operation(summary = "Get an aircraft by ID")
+    @GetMapping("/ai/top-statistics")
+    public ResponseEntity<?> analyze(@RequestParam(required = false) LocalDate startDate,
+                                     @RequestParam(required = false) LocalDate endDate,
+                                     @RequestParam(required = false) Double rangeStart,
+                                     @RequestParam(required = false) Double rangeEnd) throws JsonProcessingException {
+
+        return ResponseEntity.ok(aiAnalysisService.getTopStatistics(rangeStart, rangeEnd, startDate, endDate));
     }
 
     private int getPageSize(Integer size) {

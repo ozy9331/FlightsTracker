@@ -2,7 +2,6 @@ package io.vitech.flights.tracker.repository.impl;
 
 import io.vitech.flights.tracker.entity.AirportEntity;
 import io.vitech.flights.tracker.entity.FlightEntity;
-import io.vitech.flights.tracker.repository.FlightRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;

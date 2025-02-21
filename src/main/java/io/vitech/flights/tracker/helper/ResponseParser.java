@@ -3,6 +3,7 @@ package io.vitech.flights.tracker.helper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class ResponseParser {
             // Parse content as JSON
             JsonNode contentNode = objectMapper.readTree(content);
             // Check if status is true
-            if (contentNode.path("status").asBoolean()) {
+            if (StringUtils.isNotBlank(contentNode.path("data").toPrettyString())) {
                 JsonNode dataNode = contentNode.path("data");
                 LOGGER.debug("Extracted Data: " + dataNode.toPrettyString());
                 return dataNode.toPrettyString();

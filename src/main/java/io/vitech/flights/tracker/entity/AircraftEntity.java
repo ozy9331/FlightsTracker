@@ -13,8 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -59,6 +57,4 @@ public class AircraftEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "airline_id", referencedColumnName = "id")
     private AirlineEntity airlineEntity;
-
-
 }

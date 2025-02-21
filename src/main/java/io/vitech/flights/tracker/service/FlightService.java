@@ -75,7 +75,7 @@ public class FlightService {
     }
 
     public List<TopAirline> findTopAirlines(final Double startRange, final Double endRange, final Integer limit, final LocalDate startDate, final LocalDate endDate, final String city, final String airport) {
-        List<Object[]> results = flightRepository.findTopAirlines(startRange, endRange, startDate, endDate, limit);
+        List<Object[]> results = flightRepository.findTopAirlines(startRange, endRange, startDate, endDate, limit, city, airport);
 
         return results.stream()
                 .map(row -> new TopAirline(

@@ -22,13 +22,12 @@
             </column>
         </createTable>
 
-
         <createTable tableName="cities">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="city_name" type="varchar(250)" />
-            <column name="iata_code" type="varchar(20)"/>
+            <column name="iata_code" type="varchar(10)"/>
             <column name="timezone_id" type="BIGINT" />
         </createTable>
 
@@ -48,7 +47,7 @@
             <column name="iata_code" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="type" type="VARCHAR(255)">
+            <column name="type" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -57,19 +56,19 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="aircraft_reg" type="VARCHAR(255)">
+            <column name="aircraft_reg" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="iata_code" type="VARCHAR(255)">
+            <column name="iata_code" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
             <column name="aircraft_age" type="FLOAT"/>
             <column name="first_flight_date" type="VARCHAR(50)"/>
             <column name="delivery_date" type="VARCHAR(50)"/>
             <column name="registration_date" type="VARCHAR(50)"/>
-            <column name="construction_number" type="VARCHAR(255)"/>
+            <column name="construction_number" type="VARCHAR(20)"/>
             <column name="plane_owner" type="VARCHAR(255)"/>
-            <column name="airline_iata_code" type="VARCHAR(255)"/>
+            <column name="airline_iata_code" type="VARCHAR(10)"/>
             <column name="aircraft_type_id" type="BIGINT"/>
             <column name="airline_id" type="BIGINT"/>
         </createTable>
@@ -100,7 +99,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="airport_name" type="varchar(250)"/>
-            <column name="iata_code" type="varchar(20)"/>
+            <column name="iata_code" type="varchar(10)"/>
             <column name="latitude" type="float"/>
             <column name="longitude" type="float"/>
             <column name="city_id" type="bigint" />
@@ -111,18 +110,18 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="flight_date" type="date" />
-            <column name="departure_time" type="varchar(155)" />
-            <column name="arrival_time" type="varchar(155)" />
+            <column name="departure_time" type="varchar(50)" />
+            <column name="arrival_time" type="varchar(50)" />
             <column name="range" type="double" />
             <column name="departure_airport_id" type="bigint" />
             <column name="arrival_airport_id" type="bigint" />
             <column name="flight_status_id" type="int" />
             <column name="aircraft_id" type="bigint" />
             <column name="airline_id" type="bigint" />
-            <column name="departure_iata_code" type="varchar(20)" />
-            <column name="arrival_iata_code" type="varchar(20)" />
-            <column name="airline_iata" type="varchar(20)" />
-            <column name="airline_icao" type="varchar(20)" />
+            <column name="departure_iata_code" type="varchar(10)" />
+            <column name="arrival_iata_code" type="varchar(10)" />
+            <column name="airline_iata" type="varchar(10)" />
+            <column name="airline_icao" type="varchar(10s)" />
             <column name="aircraft_registration" type="varchar(50)" />
         </createTable>
     </changeSet>
